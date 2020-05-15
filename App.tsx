@@ -25,7 +25,6 @@ const MainTabNavigator = createBottomTabNavigator(
     defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused, horizontal, tintColor }) => {
         const { routeName } = navigation.state;
-        let IconComponent = Icon;
         let iconName;
         if (routeName === "Main") {
           iconName = focused ? "ios-home" : "ios-home";
@@ -36,7 +35,7 @@ const MainTabNavigator = createBottomTabNavigator(
         }
 
         // You can return any component that you like here!
-        return <IconComponent name={iconName} size={25} color={tintColor} />;
+        return <Icon name={iconName} size={25} color={tintColor} />;
       },
     }),
     tabBarOptions: {

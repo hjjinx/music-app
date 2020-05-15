@@ -4,15 +4,7 @@ import { createAppContainer } from "react-navigation";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 import Icon from "react-native-vector-icons/Ionicons";
 
-class HomeScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Home</Text>
-      </View>
-    );
-  }
-}
+import HomeStack from "./src/Home/HomeStack";
 
 class LibraryScreen extends React.Component {
   render() {
@@ -26,7 +18,7 @@ class LibraryScreen extends React.Component {
 
 const MainTabNavigator = createBottomTabNavigator(
   {
-    Home: HomeScreen,
+    Main: HomeStack,
     Library: LibraryScreen,
   },
   {
@@ -35,7 +27,7 @@ const MainTabNavigator = createBottomTabNavigator(
         const { routeName } = navigation.state;
         let IconComponent = Icon;
         let iconName;
-        if (routeName === "Home") {
+        if (routeName === "Main") {
           iconName = focused ? "ios-home" : "ios-home";
           // Sometimes we want to add badges to some icons.
           // You can check the implementation below.

@@ -1,0 +1,17 @@
+{
+  "name": "music-app",
+  "displayName": "music-app",
+  "expo": {
+    "name": "music-app",
+    "slug": "music-app",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}

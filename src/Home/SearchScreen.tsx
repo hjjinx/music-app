@@ -1,10 +1,12 @@
-import {View} from 'react-native';
+import {View, Keyboard} from 'react-native';
 import React from 'react';
 import {SearchBar, colors} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
 
 import Colors from '../Styles/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {search} from '../SearchAPI/youtubeSearch';
+import {ScrollView} from 'react-native-gesture-handler';
 
 export default class HomeScreen extends React.Component {
   state = {
@@ -39,9 +41,11 @@ export default class HomeScreen extends React.Component {
     const q = this.state.searchQuery;
     if (q.length < 2) return;
     this.setState({searching: true});
-    this.searchTimeout = setTimeout(() => {
+    this.searchTimeout = setTimeout(async () => {
       // send the request for searching YouTube here
-      this.setState({searching: false});
+      const results = await search(q);
+      console.log(results);
+      this.setState({searching: false, results});
     }, 2000);
   };
 
@@ -111,14 +115,18 @@ export default class HomeScreen extends React.Component {
             // height: 10,
           }}
         />
-        <View style={{backgroundColor: Colors.mainBackground}}>
-          {listOfItems}
-          <View
+        <View style={{backgroundColor: Colors.mainBackground, flex: 1}}>
+          <ScrollView
+            onScrollBeginDrag={Keyboard.dismiss}
+            keyboardShouldPersistTaps="never">
+            {listOfItems}
+          </ScrollView>
+          {/* <View
             style={{
               backgroundColor: Colors.mainBackground,
               height: 1000,
             }}
-          />
+          /> */}
         </View>
       </View>
     );

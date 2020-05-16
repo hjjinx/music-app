@@ -1,20 +1,13 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { createAppContainer } from "react-navigation";
-import { createBottomTabNavigator } from "react-navigation-tabs";
-import Icon from "react-native-vector-icons/Ionicons";
+import React from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {createAppContainer} from 'react-navigation';
+import {createBottomTabNavigator} from 'react-navigation-tabs';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import HomeStack from "./src/Home/HomeStack";
+import HomeStack from './src/Home/HomeStack';
+import LibraryScreen from './src/Library/LibraryScreen';
 
-class LibraryScreen extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Library</Text>
-      </View>
-    );
-  }
-}
+import colors from './src/Styles/Colors';
 
 const MainTabNavigator = createBottomTabNavigator(
   {
@@ -22,34 +15,34 @@ const MainTabNavigator = createBottomTabNavigator(
     Library: LibraryScreen,
   },
   {
-    defaultNavigationOptions: ({ navigation }) => ({
-      tabBarIcon: ({ focused, horizontal, tintColor }) => {
-        const { routeName } = navigation.state;
+    defaultNavigationOptions: ({navigation}) => ({
+      tabBarIcon: ({focused, horizontal, tintColor}) => {
+        const {routeName} = navigation.state;
         let iconName;
-        if (routeName === "Main") {
-          iconName = focused ? "ios-home" : "ios-home";
+        if (routeName === 'Main') {
+          iconName = focused ? 'ios-home' : 'ios-home';
           // Sometimes we want to add badges to some icons.
           // You can check the implementation below.
-        } else if (routeName === "Library") {
-          iconName = focused ? "ios-list-box" : "ios-list";
+        } else if (routeName === 'Library') {
+          iconName = focused ? 'ios-musical-notes' : 'ios-musical-notes';
         }
 
         // You can return any component that you like here!
-        return <Icon name={iconName} size={25} color={tintColor} />;
+        return <Icon name={iconName} size={30} color={tintColor} />;
       },
     }),
     tabBarOptions: {
-      activeTintColor: "green",
-      inactiveTintColor: "gray",
+      activeTintColor: colors.textPrimary,
+      inactiveTintColor: colors.textSecondary,
       showLabel: false,
       style: {
-        backgroundColor: "black",
+        backgroundColor: 'black',
         borderBottomLeftRadius: 1,
-        borderColor: "green",
-        paddingBottom: 10,
+        borderColor: 'green',
+        paddingBottom: 7,
       },
     },
-  }
+  },
 );
 
 export default createAppContainer(MainTabNavigator);
@@ -57,12 +50,12 @@ export default createAppContainer(MainTabNavigator);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#222",
-    color: "green",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#222',
+    color: 'green',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
-    color: "green",
+    color: 'green',
   },
 });

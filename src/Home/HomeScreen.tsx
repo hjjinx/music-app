@@ -5,6 +5,7 @@ import {SearchBar} from 'react-native-elements';
 import Styles from '../Styles/Home';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Colors from '../Styles/Colors';
 
 export default class HomeScreen extends React.Component {
   render() {
@@ -12,7 +13,7 @@ export default class HomeScreen extends React.Component {
       <View style={{flex: 1}}>
         <TouchableOpacity
           onPress={() => this.props.navigation.navigate('Search')}>
-          <View style={{backgroundColor: '#111'}}>
+          <View style={{backgroundColor: Colors.backgroundSecondary}}>
             <Text
               style={{
                 color: 'white',

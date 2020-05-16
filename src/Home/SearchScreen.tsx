@@ -1,4 +1,4 @@
-import {View, Keyboard} from 'react-native';
+import {View, Text, Keyboard} from 'react-native';
 import React from 'react';
 import {SearchBar, colors} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
@@ -7,46 +7,29 @@ import Colors from '../Styles/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {search} from '../SearchAPI/youtubeSearch';
 import {ScrollView} from 'react-native-gesture-handler';
+import styles from '../Styles/Home';
 
 export default class HomeScreen extends React.Component {
   state = {
     searchQuery: '',
     searching: false,
-    results: [
-      {
-        title: 'DripReport - Skechers (Lyrics) ft. Tyga',
-        artist: '7clouds',
-        href: 'https://www.youtube.com/watch?v=6lTL-wz4hMA',
-      },
-      {
-        title: 'DripReport - Skechers (Lyrics) ft. Tyga',
-        artist: '7clouds',
-        href: 'https://www.youtube.com/watch?v=6lTL-wz4hMA',
-      },
-      {
-        title: 'DripReport - Skechers (Lyrics) ft. Tyga',
-        artist: '7clouds',
-        href: 'https://www.youtube.com/watch?v=6lTL-wz4hMA',
-      },
-      {
-        title: 'DripReport - Skechers (Lyrics) ft. Tyga',
-        artist: '7clouds',
-        href: 'https://www.youtube.com/watch?v=6lTL-wz4hMA',
-      },
-    ],
+    results: [],
   };
   searchTimeout;
 
   onSearchChange = () => {
+    clearTimeout(this.searchTimeout);
     const q = this.state.searchQuery;
-    if (q.length < 2) return;
+    if (q.length < 2) {
+      this.setState({searching: false, results: []});
+      return;
+    }
     this.setState({searching: true});
     this.searchTimeout = setTimeout(async () => {
       // send the request for searching YouTube here
       const results = await search(q);
-      console.log(results);
       this.setState({searching: false, results});
-    }, 2000);
+    }, 300);
   };
 
   onClickDownload = href => {
@@ -54,39 +37,47 @@ export default class HomeScreen extends React.Component {
   };
 
   render() {
-    const listOfItems = this.state.results.map((res, i) => (
-      <ListItem
-        key={i}
-        title={res.title}
-        titleStyle={{color: Colors.textPrimary}}
-        subtitle={res.artist}
-        subtitleStyle={{color: Colors.textSecondary}}
-        bottomDivider
-        leftAvatar={
-          <Icon
-            name="ios-play"
-            size={20}
-            // onPress={this.onClickDownload}
-            style={{color: 'white'}}
-          />
-        }
-        rightElement={
-          <Icon
-            name="ios-cloud-download"
-            size={20}
-            onPress={this.onClickDownload}
-            style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
-          />
-        }
-        containerStyle={{
-          backgroundColor: Colors.mainBackground,
-        }}
-        contentContainerStyle={{
-          backgroundColor: Colors.mainBackground,
-          // color: 'white',
-        }}
-      />
-    ));
+    let listOfItems;
+    if (this.state.results.length > 0)
+      listOfItems = this.state.results.map((res, i) => (
+        <ListItem
+          key={i}
+          title={res.title}
+          titleStyle={{color: Colors.textPrimary}}
+          subtitle={res.artist}
+          subtitleStyle={{color: Colors.textSecondary}}
+          bottomDivider
+          leftAvatar={
+            <Icon
+              name="ios-play"
+              size={20}
+              // onPress={this.onClickDownload}
+              style={{color: 'white'}}
+            />
+          }
+          rightElement={
+            <Icon
+              name="ios-cloud-download"
+              size={20}
+              onPress={this.onClickDownload}
+              style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
+            />
+          }
+          containerStyle={{
+            backgroundColor: Colors.backgroundPrimary,
+          }}
+          contentContainerStyle={{
+            backgroundColor: Colors.backgroundPrimary,
+            // color: 'white',
+          }}
+        />
+      ));
+    else
+      listOfItems = (
+        <View style={[styles.container, {paddingTop: 100}]}>
+          <Text style={{color: Colors.textPrimary}}>No Results found!</Text>
+        </View>
+      );
     return (
       <View style={{flex: 1}}>
         <SearchBar
@@ -101,10 +92,10 @@ export default class HomeScreen extends React.Component {
             height: 10,
           }}
           containerStyle={{
-            // padding: 0,
+            paddingVertical: 15,
             margin: 0,
             // height: 100,
-            backgroundColor: Colors.mainBackground,
+            backgroundColor: Colors.backgroundSecondary,
             borderBottomWidth: 0,
           }}
           inputContainerStyle={{
@@ -115,7 +106,7 @@ export default class HomeScreen extends React.Component {
             // height: 10,
           }}
         />
-        <View style={{backgroundColor: Colors.mainBackground, flex: 1}}>
+        <View style={{backgroundColor: Colors.backgroundPrimary, flex: 1}}>
           <ScrollView
             onScrollBeginDrag={Keyboard.dismiss}
             keyboardShouldPersistTaps="never">

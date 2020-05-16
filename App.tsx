@@ -8,6 +8,7 @@ import HomeStack from './src/Home/HomeStack';
 import LibraryScreen from './src/Library/LibraryScreen';
 
 import colors from './src/Styles/Colors';
+import Colors from './src/Styles/Colors';
 
 const MainTabNavigator = createBottomTabNavigator(
   {
@@ -36,9 +37,9 @@ const MainTabNavigator = createBottomTabNavigator(
       inactiveTintColor: colors.textSecondary,
       showLabel: false,
       style: {
-        backgroundColor: 'black',
-        borderBottomLeftRadius: 1,
-        borderColor: 'green',
+        backgroundColor: Colors.backgroundSecondary,
+        borderRadius: 0,
+        borderTopColor: 'transparent',
         paddingBottom: 7,
       },
     },
@@ -46,16 +47,3 @@ const MainTabNavigator = createBottomTabNavigator(
 );
 
 export default createAppContainer(MainTabNavigator);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#222',
-    color: 'green',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: 'green',
-  },
-});

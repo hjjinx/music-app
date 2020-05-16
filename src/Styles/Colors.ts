@@ -1,5 +1,6 @@
 export default {
-  mainBackground: '#222',
+  backgroundPrimary: '#000',
+  backgroundSecondary: '#222',
   textPrimary: 'white',
   textSecondary: 'grey',
 };

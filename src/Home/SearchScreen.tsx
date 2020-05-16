@@ -1,7 +1,8 @@
-import {View, Text, Keyboard} from 'react-native';
+import {View, Text, Keyboard, PermissionsAndroid} from 'react-native';
 import React from 'react';
 import {SearchBar, colors} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
+import ytdl from 'ytdl-core';
 
 import Colors from '../Styles/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -34,6 +35,7 @@ export default class HomeScreen extends React.Component {
 
   onClickDownload = href => {
     // start downloading the song here
+    // /storage/emulated/0/
   };
 
   render() {
@@ -123,3 +125,47 @@ export default class HomeScreen extends React.Component {
     );
   }
 }
+
+const requestFilePermission = async () => {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      {
+        title: 'SpotiBoi needs access to your files',
+        message:
+          'SpotiBoi needs access to your files so you can download songs.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('You can use the camera');
+    } else {
+      console.log('Camera permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: 'SpotiBoi needs access to your files',
+        message:
+          'SpotiBoi needs access to your files so you can download songs.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('You can use the camera');
+    } else {
+      console.log('Camera permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};

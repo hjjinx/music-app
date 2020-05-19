@@ -4,6 +4,7 @@ import {SearchBar, colors} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
 import ytdl from 'ytdl-core';
 import RNFetchBlob from 'react-native-fetch-blob';
+import AnimatedProgressWheel from 'react-native-progress-wheel';
 
 import Colors from '../Styles/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -16,6 +17,7 @@ export default class HomeScreen extends React.Component {
     searchQuery: '',
     searching: false,
     results: [],
+    downloading: {},
   };
   searchTimeout;
 
@@ -34,7 +36,7 @@ export default class HomeScreen extends React.Component {
     }, 300);
   };
 
-  onClickDownload = async href => {
+  onClickDownload = async (href, i) => {
     let info = await ytdl.getInfo(href);
     let bestFormat;
     if (!info.formats) return;
@@ -48,6 +50,11 @@ export default class HomeScreen extends React.Component {
     // console.log(bestFormat);
     // console.log('Path: ');
     // console.log(RNFetchBlob.fs.dirs);
+    alert(
+      `Download started! The audio file is being saved in ${
+        RNFetchBlob.fs.dirs.MusicDir
+      }/${info.title}.${bestFormat.container}`,
+    );
     RNFetchBlob.config({
       path:
         RNFetchBlob.fs.dirs.MusicDir + `/${info.title}.${bestFormat.container}`,
@@ -55,13 +62,24 @@ export default class HomeScreen extends React.Component {
     })
       .fetch('GET', bestFormat.url)
       .progress({count: 10}, (received, total) => {
+        let newDownloading = Object.assign({}, this.state.downloading);
+        newDownloading[i] = {};
+        newDownloading[i].progress = (received * 100) / total;
+        this.setState({downloading: newDownloading});
         console.log('progress', received / total);
       })
       .then(res => {
         console.log(res);
+        let newDownloading = Object.assign({}, this.state.downloading);
+        delete newDownloading[i];
+        this.setState({downloading: newDownloading});
+        alert(`${info.title} has been sucessfully downloaded!`);
         console.log('The file saved to ', res.path());
       })
       .catch(err => {
+        let newDownloading = Object.assign({}, this.state.downloading);
+        delete newDownloading[i];
+        this.setState({downloading: newDownloading});
         alert('There was an error with the download! Please try again');
         console.error(err);
       });
@@ -92,12 +110,22 @@ export default class HomeScreen extends React.Component {
             />
           }
           rightElement={
-            <Icon
-              name="ios-cloud-download"
-              size={20}
-              onPress={() => this.onClickDownload(res.href)}
-              style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
-            />
+            this.state.downloading[i] ? (
+              <AnimatedProgressWheel
+                width={10}
+                size={20}
+                progress={this.state.downloading[i].progress}
+                color={'green'}
+                backgroundColor={'red'}
+              />
+            ) : (
+              <Icon
+                name="ios-cloud-download"
+                size={20}
+                onPress={() => this.onClickDownload(res.href, i)}
+                style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
+              />
+            )
           }
           containerStyle={{
             backgroundColor: Colors.backgroundPrimary,

@@ -3,6 +3,7 @@ import React from 'react';
 import {SearchBar, colors} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
 import ytdl from 'ytdl-core';
+import RNFetchBlob from 'react-native-fetch-blob';
 
 import Colors from '../Styles/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -33,7 +34,40 @@ export default class HomeScreen extends React.Component {
     }, 300);
   };
 
-  onClickDownload = href => {
+  onClickDownload = async href => {
+    let info = await ytdl.getInfo(href);
+    let bestFormat;
+    if (!info.formats) return;
+    let maxBitrate = 0;
+    for (let format of info.formats)
+      if (format.audioBitrate && format.audioBitrate > maxBitrate) {
+        maxBitrate = format.audioBitrate;
+        bestFormat = format;
+      }
+    // console.log(info);
+    // console.log(bestFormat);
+    // console.log('Path: ');
+    // console.log(RNFetchBlob.fs.dirs);
+    RNFetchBlob.config({
+      path:
+        RNFetchBlob.fs.dirs.MusicDir + `/${info.title}.${bestFormat.container}`,
+      fileCache: true,
+    })
+      .fetch('GET', bestFormat.url)
+      .progress({count: 10}, (received, total) => {
+        console.log('progress', received / total);
+      })
+      .then(res => {
+        console.log(res);
+        console.log('The file saved to ', res.path());
+      })
+      .catch(err => {
+        alert('There was an error with the download! Please try again');
+        console.error(err);
+      });
+
+    // console.log(maxBitrate);
+    // console.log(bestFormat);
     // start downloading the song here
     // /storage/emulated/0/
   };
@@ -61,7 +95,7 @@ export default class HomeScreen extends React.Component {
             <Icon
               name="ios-cloud-download"
               size={20}
-              onPress={this.onClickDownload}
+              onPress={() => this.onClickDownload(res.href)}
               style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
             />
           }
@@ -74,7 +108,7 @@ export default class HomeScreen extends React.Component {
           }}
         />
       ));
-    else
+    else if (!this.state.searching)
       listOfItems = (
         <View style={[styles.container, {paddingTop: 100}]}>
           <Text style={{color: Colors.textPrimary}}>No Results found!</Text>

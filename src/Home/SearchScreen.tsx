@@ -3,7 +3,7 @@ import React from 'react';
 import {SearchBar, colors} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
 import ytdl from 'ytdl-core';
-import RNFetchBlob from 'react-native-fetch-blob';
+import RNFetchBlob from 'rn-fetch-blob';
 import AnimatedProgressWheel from 'react-native-progress-wheel';
 
 import Colors from '../Styles/Colors';
@@ -37,6 +37,15 @@ export default class HomeScreen extends React.Component {
   };
 
   onClickDownload = async (href, i) => {
+    if (
+      !(await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      )) ||
+      !(await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      ))
+    )
+      await requestFilePermission();
     let info = await ytdl.getInfo(href);
     let bestFormat;
     if (!info.formats) return;

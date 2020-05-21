@@ -16,7 +16,6 @@
     "react-native": "0.62.2",
     "react-native-cheerio": "^1.0.0-rc.4",
     "react-native-elements": "^2.0.0",
-    "react-native-fetch-blob": "^0.10.8",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-progress-wheel": "^1.0.5",
     "react-native-reanimated": "^1.8.0",
@@ -26,6 +25,7 @@
     "react-navigation": "^4.3.9",
     "react-navigation-stack": "^2.5.1",
     "react-navigation-tabs": "^2.8.13",
+    "rn-fetch-blob": "^0.12.0",
     "url": "^0.11.0",
     "ytdl-core": "https://github.com/hjjinx/react-native-ytdl.git"
   },

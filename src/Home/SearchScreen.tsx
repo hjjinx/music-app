@@ -1,6 +1,6 @@
 import {View, Text, Keyboard, PermissionsAndroid} from 'react-native';
 import React from 'react';
-import {SearchBar, colors} from 'react-native-elements';
+import {SearchBar} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
 import ytdl from 'ytdl-core';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -21,19 +21,21 @@ export default class HomeScreen extends React.Component {
   };
   searchTimeout;
 
-  onSearchChange = () => {
-    clearTimeout(this.searchTimeout);
-    const q = this.state.searchQuery;
-    if (q.length < 2) {
-      this.setState({searching: false, results: []});
-      return;
-    }
-    this.setState({searching: true});
-    this.searchTimeout = setTimeout(async () => {
-      // send the request for searching YouTube here
-      const results = await search(q);
-      this.setState({searching: false, results});
-    }, 300);
+  onSearchChange = value => {
+    this.setState({searchQuery: value}, () => {
+      clearTimeout(this.searchTimeout);
+      const q = this.state.searchQuery;
+      if (q.length < 2) {
+        this.setState({searching: false, results: []});
+        return;
+      }
+      this.setState({searching: true});
+      this.searchTimeout = setTimeout(async () => {
+        // send the request for searching YouTube here
+        const results = await search(q);
+        this.setState({searching: false, results});
+      }, 500);
+    });
   };
 
   onClickDownload = async (href, i) => {
@@ -155,9 +157,8 @@ export default class HomeScreen extends React.Component {
       <View style={{flex: 1}}>
         <SearchBar
           placeholder="Search for..."
-          onChangeText={value => this.setState({searchQuery: value})}
+          onChangeText={value => this.onSearchChange(value)}
           value={this.state.searchQuery}
-          onChange={this.onSearchChange}
           showLoading={this.state.searching}
           inputStyle={{
             padding: 0,

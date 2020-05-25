@@ -1,4 +1,4 @@
-import {View, Text, Keyboard, PermissionsAndroid} from 'react-native';
+import {View, Text, Keyboard, PermissionsAndroid, Easing} from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
@@ -20,6 +20,11 @@ export default class HomeScreen extends React.Component {
     downloading: {},
   };
   searchTimeout;
+  searchInput: SearchBar;
+
+  componentDidMount() {
+    this.searchInput.focus();
+  }
 
   onSearchChange = value => {
     this.setState({searchQuery: value}, () => {
@@ -48,7 +53,15 @@ export default class HomeScreen extends React.Component {
       ))
     )
       await requestFilePermission();
-    let info = await ytdl.getInfo(href);
+    let info;
+    try {
+      info = await ytdl.getInfo(href);
+    } catch (err) {
+      alert('There was an error in fetching the details! Please try again');
+      console.log(err);
+      return;
+    }
+
     let bestFormat;
     if (!info.formats) return;
     let maxBitrate = 0;
@@ -64,20 +77,18 @@ export default class HomeScreen extends React.Component {
     alert(
       `Download started! The audio file is being saved in ${
         RNFetchBlob.fs.dirs.MusicDir
-      }/${info.title}.${bestFormat.container}`,
+      }/${info.title}.mp3`,
     );
     RNFetchBlob.config({
-      path:
-        RNFetchBlob.fs.dirs.MusicDir + `/${info.title}.${bestFormat.container}`,
+      path: RNFetchBlob.fs.dirs.MusicDir + `/${info.title}.mp3`,
       fileCache: true,
     })
       .fetch('GET', bestFormat.url)
-      .progress({count: 10}, (received, total) => {
+      .progress((received, total) => {
         let newDownloading = Object.assign({}, this.state.downloading);
         newDownloading[i] = {};
         newDownloading[i].progress = (received * 100) / total;
         this.setState({downloading: newDownloading});
-        console.log('progress', received / total);
       })
       .then(res => {
         console.log(res);
@@ -123,11 +134,11 @@ export default class HomeScreen extends React.Component {
           rightElement={
             this.state.downloading[i] ? (
               <AnimatedProgressWheel
-                width={10}
+                width={2}
                 size={20}
                 progress={this.state.downloading[i].progress}
-                color={'green'}
-                backgroundColor={'red'}
+                color={Colors.textPrimary}
+                backgroundColor={Colors.backgroundSecondary}
               />
             ) : (
               <Icon
@@ -157,6 +168,7 @@ export default class HomeScreen extends React.Component {
       <View style={{flex: 1}}>
         <SearchBar
           placeholder="Search for..."
+          ref={input => (this.searchInput = input)}
           onChangeText={value => this.onSearchChange(value)}
           value={this.state.searchQuery}
           showLoading={this.state.searching}

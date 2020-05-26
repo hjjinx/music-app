@@ -21,7 +21,7 @@ export default class HomeScreen extends React.Component {
   };
   searchTimeout;
   searchInput: SearchBar;
-
+  prog: AnimatedProgressWheel;
   componentDidMount() {
     this.searchInput.focus();
   }
@@ -62,6 +62,10 @@ export default class HomeScreen extends React.Component {
       return;
     }
 
+    let newDownloading = Object.assign({}, this.state.downloading);
+    newDownloading[i] = {progress: 0};
+    this.setState({downloading: newDownloading});
+
     let bestFormat;
     if (!info.formats) return;
     let maxBitrate = 0;
@@ -70,10 +74,6 @@ export default class HomeScreen extends React.Component {
         maxBitrate = format.audioBitrate;
         bestFormat = format;
       }
-    // console.log(info);
-    // console.log(bestFormat);
-    // console.log('Path: ');
-    // console.log(RNFetchBlob.fs.dirs);
     alert(
       `Download started! The audio file is being saved in ${
         RNFetchBlob.fs.dirs.MusicDir
@@ -88,6 +88,11 @@ export default class HomeScreen extends React.Component {
         let newDownloading = Object.assign({}, this.state.downloading);
         newDownloading[i] = {};
         newDownloading[i].progress = (received * 100) / total;
+        this.prog.animateTo(
+          (received * 100) / total,
+          2000,
+          Easing.bezier(0, 1, 1, 1),
+        );
         this.setState({downloading: newDownloading});
       })
       .then(res => {
@@ -134,9 +139,10 @@ export default class HomeScreen extends React.Component {
           rightElement={
             this.state.downloading[i] ? (
               <AnimatedProgressWheel
+                ref={elem => (this.prog = elem)}
                 width={2}
                 size={20}
-                progress={this.state.downloading[i].progress}
+                // progress={this.state.downloading[i].progress}
                 color={Colors.textPrimary}
                 backgroundColor={Colors.backgroundSecondary}
               />

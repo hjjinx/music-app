@@ -18,11 +18,15 @@ export default class HomeScreen extends React.Component {
     searching: false,
     results: [],
     downloading: {},
+    // Will contain list of all the songs present in the /Music folder
+    downloaded: [],
   };
   searchTimeout;
   searchInput: SearchBar;
   prog: AnimatedProgressWheel;
-  componentDidMount() {
+  async componentDidMount() {
+    const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
+    this.setState({downloaded});
     this.searchInput.focus();
   }
 
@@ -98,7 +102,9 @@ export default class HomeScreen extends React.Component {
         console.log(res);
         let newDownloading = Object.assign({}, this.state.downloading);
         delete newDownloading[i];
-        this.setState({downloading: newDownloading});
+        let newDownloaded = this.state.downloaded.slice();
+        newDownloaded.push(info.title + '.mp3');
+        this.setState({downloading: newDownloading, downloaded: newDownloaded});
         alert(`${info.title} has been sucessfully downloaded!`);
         console.log('The file saved to ', res.path());
       })
@@ -116,6 +122,10 @@ export default class HomeScreen extends React.Component {
     // /storage/emulated/0/
   };
 
+  onClickPlay = async (href, i) => {
+    console.log('Will play now');
+  };
+
   render() {
     let listOfItems;
     if (this.state.results.length > 0)
@@ -127,11 +137,12 @@ export default class HomeScreen extends React.Component {
           subtitle={res.artist}
           subtitleStyle={{color: Colors.textSecondary}}
           bottomDivider
+          onPress={() => this.onClickPlay(res.href, i)}
           leftAvatar={
             <Icon
               name="ios-play"
               size={20}
-              // onPress={this.onClickDownload}
+              onPress={() => this.onClickPlay(res.href, i)}
               style={{color: 'white'}}
             />
           }
@@ -144,6 +155,13 @@ export default class HomeScreen extends React.Component {
                 // progress={this.state.downloading[i].progress}
                 color={Colors.textPrimary}
                 backgroundColor={Colors.backgroundSecondary}
+              />
+            ) : this.state.downloaded.includes(res.title + '.mp3') ? (
+              <Icon
+                name="ios-cloud-done"
+                size={20}
+                onPress={() => this.onClickPlay(res.href, i)}
+                style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
               />
             ) : (
               <Icon

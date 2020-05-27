@@ -23,8 +23,38 @@ export default class HomeScreen extends React.Component {
   };
   searchTimeout;
   searchInput: SearchBar;
-  prog: AnimatedProgressWheel;
+  prog: AnimatedProgressWheel[] = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+  ];
   async componentDidMount() {
+    if (
+      !(await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      )) ||
+      !(await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      ))
+    )
+      await requestFilePermission();
     const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
     this.setState({downloaded});
     this.searchInput.focus();
@@ -65,7 +95,11 @@ export default class HomeScreen extends React.Component {
     try {
       info = await ytdl.getInfo(href);
     } catch (err) {
+      let newDownloading = Object.assign({}, this.state.downloading);
+      delete newDownloading[i];
+      this.setState({downloading: newDownloading});
       alert('There was an error in fetching the details! Please try again');
+      console.log('Error in getting song info');
       console.log(err);
       return;
     }
@@ -88,10 +122,9 @@ export default class HomeScreen extends React.Component {
     })
       .fetch('GET', bestFormat.url)
       .progress({interval: 10}, (received, total) => {
-        console.log('Progress' + (received * 100) / total);
         let newDownloading = Object.assign({}, this.state.downloading);
         newDownloading[i] = true;
-        this.prog.animateTo(
+        this.prog[i].animateTo(
           (received * 100) / total,
           2000,
           Easing.bezier(0, 0.62, 1, 1),
@@ -99,20 +132,19 @@ export default class HomeScreen extends React.Component {
         this.setState({downloading: newDownloading});
       })
       .then(res => {
-        console.log(res);
         let newDownloading = Object.assign({}, this.state.downloading);
         delete newDownloading[i];
         let newDownloaded = this.state.downloaded.slice();
         newDownloaded.push(info.title + '.mp3');
         this.setState({downloading: newDownloading, downloaded: newDownloaded});
         alert(`${info.title} has been sucessfully downloaded!`);
-        console.log('The file saved to ', res.path());
       })
       .catch(err => {
         let newDownloading = Object.assign({}, this.state.downloading);
         delete newDownloading[i];
         this.setState({downloading: newDownloading});
         alert('There was an error with the download! Please try again');
+        console.log('Song not downloaded completely');
         console.error(err);
       });
 
@@ -149,9 +181,10 @@ export default class HomeScreen extends React.Component {
           rightElement={
             this.state.downloading[i] ? (
               <AnimatedProgressWheel
-                ref={elem => (this.prog = elem)}
+                ref={elem => (this.prog[i] = elem)}
                 width={2}
                 size={20}
+                animateFromValue={0}
                 // progress={this.state.downloading[i].progress}
                 color={Colors.textPrimary}
                 backgroundColor={Colors.backgroundSecondary}

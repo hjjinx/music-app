@@ -44,6 +44,10 @@ export default class HomeScreen extends React.Component {
   };
 
   onClickDownload = async (href, i) => {
+    let newDownloading = Object.assign({}, this.state.downloading);
+    newDownloading[i] = true;
+    this.setState({downloading: newDownloading});
+
     if (
       !(await PermissionsAndroid.check(
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
@@ -62,10 +66,6 @@ export default class HomeScreen extends React.Component {
       return;
     }
 
-    let newDownloading = Object.assign({}, this.state.downloading);
-    newDownloading[i] = {progress: 0};
-    this.setState({downloading: newDownloading});
-
     let bestFormat;
     if (!info.formats) return;
     let maxBitrate = 0;
@@ -74,24 +74,23 @@ export default class HomeScreen extends React.Component {
         maxBitrate = format.audioBitrate;
         bestFormat = format;
       }
-    alert(
-      `Download started! The audio file is being saved in ${
-        RNFetchBlob.fs.dirs.MusicDir
-      }/${info.title}.mp3`,
-    );
+    // alert(
+    //   `Download started! The audio file is being saved in ${
+    //     RNFetchBlob.fs.dirs.MusicDir
+    //   }/${info.title}.mp3`,
+    // );
     RNFetchBlob.config({
       path: RNFetchBlob.fs.dirs.MusicDir + `/${info.title}.mp3`,
-      fileCache: true,
     })
       .fetch('GET', bestFormat.url)
-      .progress((received, total) => {
+      .progress({interval: 10}, (received, total) => {
+        console.log('Progress' + (received * 100) / total);
         let newDownloading = Object.assign({}, this.state.downloading);
-        newDownloading[i] = {};
-        newDownloading[i].progress = (received * 100) / total;
+        newDownloading[i] = true;
         this.prog.animateTo(
           (received * 100) / total,
           2000,
-          Easing.bezier(0, 1, 1, 1),
+          Easing.bezier(0, 0.62, 1, 1),
         );
         this.setState({downloading: newDownloading});
       })

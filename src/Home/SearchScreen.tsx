@@ -4,7 +4,8 @@ import {SearchBar} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
 import ytdl from 'ytdl-core';
 import RNFetchBlob from 'rn-fetch-blob';
-import AnimatedProgressWheel from 'react-native-progress-wheel';
+// import '@react-native-community/art';
+import {Circle as ProgCircle} from 'react-native-progress';
 
 import Colors from '../Styles/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -17,34 +18,13 @@ export default class HomeScreen extends React.Component {
     searchQuery: '',
     searching: false,
     results: [],
-    downloading: {},
+    downloading: new Array(20).map(i => null),
     // Will contain list of all the songs present in the /Music folder
     downloaded: [],
   };
   searchTimeout;
   searchInput: SearchBar;
-  prog: AnimatedProgressWheel[] = [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    16,
-    17,
-    18,
-    19,
-    20,
-  ];
+
   async componentDidMount() {
     if (
       !(await PermissionsAndroid.check(
@@ -79,7 +59,7 @@ export default class HomeScreen extends React.Component {
 
   onClickDownload = async (href, i) => {
     let newDownloading = Object.assign({}, this.state.downloading);
-    newDownloading[i] = true;
+    newDownloading[i] = 0;
     this.setState({downloading: newDownloading});
 
     if (
@@ -123,12 +103,12 @@ export default class HomeScreen extends React.Component {
       .fetch('GET', bestFormat.url)
       .progress({interval: 10}, (received, total) => {
         let newDownloading = Object.assign({}, this.state.downloading);
-        newDownloading[i] = true;
-        this.prog[i].animateTo(
-          (received * 100) / total,
-          2000,
-          Easing.bezier(0, 0.62, 1, 1),
-        );
+        newDownloading[i] = received / total;
+        // this.prog[i].animateTo(
+        //   (received * 100) / total,
+        //   2000,
+        //   Easing.bezier(0, 0.62, 1, 1),
+        // );
         this.setState({downloading: newDownloading});
       })
       .then(res => {
@@ -179,17 +159,29 @@ export default class HomeScreen extends React.Component {
             />
           }
           rightElement={
-            this.state.downloading[i] ? (
-              <AnimatedProgressWheel
-                ref={elem => (this.prog[i] = elem)}
-                width={2}
+            this.state.downloading[i] != null ? (
+              <ProgCircle
+                progress={this.state.downloading[i]}
+                unfilledColor={Colors.backgroundSecondary}
+                showsText={true}
+                // ref={elem => (this.prog[i] = elem)}
                 size={20}
-                animateFromValue={0}
-                // progress={this.state.downloading[i].progress}
+                thickness={1}
+                textStyle={{fontSize: 8}}
+                formatText={progress => `${Math.round(progress * 100)}`}
+                borderWidth={0}
                 color={Colors.textPrimary}
-                backgroundColor={Colors.backgroundSecondary}
+                animated={true}
               />
-            ) : this.state.downloaded.includes(res.title + '.mp3') ? (
+            ) : // <AnimatedProgressWheel
+            //   ref={elem => (this.prog[i] = elem)}
+            //   width={2}
+            //   size={20}
+            //   containerColor={Colors.backgroundPrimary}
+            //   color={Colors.textPrimary}
+            //   backgroundColor={Colors.backgroundSecondary}
+            // />
+            this.state.downloaded.includes(res.title + '.mp3') ? (
               <Icon
                 name="ios-cloud-done"
                 size={20}

@@ -862,6 +862,14 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
+"@react-native-community/art@^1.1.2", "@react-native-community/art@https://github.com/react-native-community/art":
+  version "1.2.0"
+  resolved "https://github.com/react-native-community/art#95bad24a33dcd3ed8563a5021deccad461adb662"
+  dependencies:
+    art "^0.10.3"
+    invariant "^2.2.4"
+    prop-types "^15.7.2"
+
 "@react-native-community/cli-debugger-ui@^4.8.0":
   version "4.8.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-4.8.0.tgz#9a6419b29be69422e0056bbb1874775750351d22"
@@ -1405,6 +1413,11 @@ array-unique@^0.3.2:
   version "0.3.2"
   resolved "https://registry.yarnpkg.com/array-unique/-/array-unique-0.3.2.tgz#a894b75d4bc4f6cd679ef3244a9fd8f46ae2d428"
   integrity sha1-qJS3XUvE9s1nnvMkSp/Y9Gri1Cg=
+
+art@^0.10.3:
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/art/-/art-0.10.3.tgz#b01d84a968ccce6208df55a733838c96caeeaea2"
+  integrity sha512-HXwbdofRTiJT6qZX/FnchtldzJjS3vkLJxQilc3Xj+ma2MXjY4UAyQ0ls1XZYVnDvVIBiFZbC6QsvtW86TD6tQ==
 
 asap@~2.0.3:
   version "2.0.6"
@@ -5286,10 +5299,12 @@ react-native-parse-html@^2.2.6:
   dependencies:
     react-native-stream "^0.1.0"
 
-react-native-progress-wheel@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/react-native-progress-wheel/-/react-native-progress-wheel-1.0.5.tgz#156874db927f7013dc9cd635662866df1489eac9"
-  integrity sha512-btEwU/u7GfdLj7M28Q3X8cJ6gCXL+M8yM0YB7v8IK2e8fwCw6T1X/zuusQQflhS7VVoox4Dcn7jBp30MBsuK0g==
+"react-native-progress@https://github.com/oblador/react-native-progress":
+  version "4.1.2"
+  resolved "https://github.com/oblador/react-native-progress#835a487607ff5780d910ba582c777f13ca696ced"
+  dependencies:
+    "@react-native-community/art" "^1.1.2"
+    prop-types "^15.7.2"
 
 react-native-ratings@^6.5.0:
   version "6.5.0"

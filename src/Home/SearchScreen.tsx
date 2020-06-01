@@ -6,6 +6,7 @@ import ytdl from 'ytdl-core';
 import RNFetchBlob from 'rn-fetch-blob';
 // import '@react-native-community/art';
 import {Circle as ProgCircle} from 'react-native-progress';
+import TrackPlayer, {TrackPlayerEvents} from 'react-native-track-player';
 
 import Colors from '../Styles/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -135,6 +136,54 @@ export default class HomeScreen extends React.Component {
   };
 
   onClickPlay = async (href, i) => {
+    try {
+      await TrackPlayer.setupPlayer();
+      await TrackPlayer.updateOptions({
+        ratingType: TrackPlayer.RATING_5_STARS,
+        capabilities: [
+          TrackPlayer.CAPABILITY_PLAY,
+          TrackPlayer.CAPABILITY_PAUSE,
+          TrackPlayer.CAPABILITY_STOP,
+        ],
+
+        // An array of capabilities that will show up when the notification is in the compact form on Android
+        compactCapabilities: [
+          TrackPlayer.CAPABILITY_PLAY,
+          TrackPlayer.CAPABILITY_PAUSE,
+        ],
+      });
+
+      let info;
+      try {
+        info = await ytdl.getInfo(href);
+      } catch (err) {
+        console.log('YTDL issue..');
+        console.log(err);
+      }
+      let bestFormat;
+      if (!info.formats) return;
+      let maxBitrate = 0;
+      for (let format of info.formats)
+        if (format.audioBitrate && format.audioBitrate > maxBitrate) {
+          maxBitrate = format.audioBitrate;
+          bestFormat = format;
+        }
+      console.log(info);
+
+      await TrackPlayer.add({
+        id: '1',
+        url: bestFormat.url,
+        title: info.title,
+        artist: info.author.name,
+        artwork: info.author.avatar,
+        duration: info.length_seconds,
+      });
+
+      await TrackPlayer.play();
+    } catch (err) {
+      console.log('Erorr in playing sound...');
+      console.log(err);
+    }
     console.log('Will play now');
   };
 

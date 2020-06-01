@@ -220,15 +220,35 @@ export default class HomeScreen extends React.Component {
           onChangeText={value => this.onSearchChange(value)}
           value={this.state.searchQuery}
           showLoading={this.state.searching}
+          // inputStyle={{
+          //   padding: 0,
+          //   margin: 0,
+          //   height: 10,
+          // }}
+          // containerStyle={{
+          //   paddingVertical: 15,
+          //   margin: 0,
+          //   // height: 100,
+          //   backgroundColor: Colors.backgroundSecondary,
+          //   borderBottomWidth: 0,
+          // }}
+          // inputContainerStyle={{
+          //   borderRadius: 100,
+          //   padding: 0,
+          //   margin: 0,
+          //   backgroundColor: 'white',
+          //   // height: 10,
+          // }}
+
           inputStyle={{
             padding: 0,
             margin: 0,
             height: 10,
           }}
           containerStyle={{
-            paddingVertical: 15,
+            paddingTop: 15,
             margin: 0,
-            // height: 100,
+            height: 75,
             backgroundColor: Colors.backgroundSecondary,
             borderBottomWidth: 0,
           }}
@@ -237,7 +257,7 @@ export default class HomeScreen extends React.Component {
             padding: 0,
             margin: 0,
             backgroundColor: 'white',
-            // height: 10,
+            height: 40,
           }}
         />
         <View style={{backgroundColor: Colors.backgroundPrimary, flex: 1}}>
@@ -271,11 +291,6 @@ const requestFilePermission = async () => {
         buttonPositive: 'OK',
       },
     );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('You can use the camera');
-    } else {
-      console.log('Camera permission denied');
-    }
   } catch (err) {
     console.warn(err);
   }
@@ -292,11 +307,6 @@ const requestFilePermission = async () => {
         buttonPositive: 'OK',
       },
     );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log('You can use the camera');
-    } else {
-      console.log('Camera permission denied');
-    }
   } catch (err) {
     console.warn(err);
   }

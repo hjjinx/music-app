@@ -12,9 +12,17 @@ module.exports.search = async function(query) {
   html = await $(`h3.yt-lockup-title`).each((i, elem) => {
     const child = elem.children[0];
     const artist = elem.next.children[0].children[0].data;
+    const img =
+      i > 5
+        ? $(
+            elem.parent.prev.children[0].children[0].children[0].children[1],
+          ).data('thumb')
+        : elem.parent.prev.children[0].children[0].children[0].children[1]
+            .attribs.src;
     urlArr.push({
       href: `https://youtube.com${child.attribs.href}`,
       title: child.attribs.title,
+      img,
       artist,
     });
   });

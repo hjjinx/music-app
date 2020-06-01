@@ -6,7 +6,7 @@ import ytdl from 'ytdl-core';
 import RNFetchBlob from 'rn-fetch-blob';
 // import '@react-native-community/art';
 import {Circle as ProgCircle} from 'react-native-progress';
-import TrackPlayer, {TrackPlayerEvents} from 'react-native-track-player';
+import TrackPlayer from 'react-native-track-player';
 
 import Colors from '../Styles/Colors';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -138,7 +138,7 @@ export default class HomeScreen extends React.Component {
   onClickPlay = async (href, i) => {
     try {
       await TrackPlayer.setupPlayer();
-      await TrackPlayer.updateOptions({
+      TrackPlayer.updateOptions({
         ratingType: TrackPlayer.RATING_5_STARS,
         capabilities: [
           TrackPlayer.CAPABILITY_PLAY,
@@ -184,7 +184,6 @@ export default class HomeScreen extends React.Component {
       console.log('Erorr in playing sound...');
       console.log(err);
     }
-    console.log('Will play now');
   };
 
   render() {
@@ -199,14 +198,7 @@ export default class HomeScreen extends React.Component {
           subtitleStyle={{color: Colors.textSecondary}}
           bottomDivider
           onPress={() => this.onClickPlay(res.href, i)}
-          leftAvatar={
-            <Icon
-              name="ios-play"
-              size={20}
-              onPress={() => this.onClickPlay(res.href, i)}
-              style={{color: 'white'}}
-            />
-          }
+          leftAvatar={{source: {uri: res.img}}}
           rightElement={
             this.state.downloading[i] != null ? (
               <ProgCircle

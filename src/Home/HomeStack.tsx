@@ -6,17 +6,34 @@ import {
 
 import HomeScreen from './HomeScreen';
 import SearchScreen from './SearchScreen';
+import PopupMenu from './PopupMenu';
 
 const HomeStackNavigator = createStackNavigator(
   {
-    Home: {screen: HomeScreen},
-    Search: {screen: SearchScreen},
+    Home: {
+      screen: HomeScreen,
+    },
+    Search: {
+      screen: SearchScreen,
+      navigationOptions: {
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      },
+    },
+    Menu: {
+      screen: PopupMenu,
+      navigationOptions: {
+        cardStyle: {backgroundColor: 'transparent'},
+      },
+    },
   },
   {
     headerMode: 'none',
-    defaultNavigationOptions: {
-      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
-    },
+    // cardStyle: {shadowColor: 'transparent'},
+    // transitionConfig: () => ({
+    //   containerStyle: {
+    //     backgroundColor: 'transparent',
+    //   },
+    // }),
   },
 );
 

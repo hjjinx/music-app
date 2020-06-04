@@ -1,4 +1,11 @@
-import {View, Text, Keyboard, PermissionsAndroid, Easing} from 'react-native';
+import {
+  View,
+  Text,
+  Keyboard,
+  PermissionsAndroid,
+  TouchableHighlight,
+  Image,
+} from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
@@ -13,8 +20,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {search} from '../SearchAPI/youtubeSearch';
 import {ScrollView} from 'react-native-gesture-handler';
 import styles from '../Styles/Home';
+import searchStyles from '../Styles/Search';
 
 export default class HomeScreen extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   state = {
     searchQuery: '',
     searching: false,
@@ -22,6 +33,7 @@ export default class HomeScreen extends React.Component {
     downloading: new Array(20).map(i => null),
     // Will contain list of all the songs present in the /Music folder
     downloaded: [],
+    isMenuOpened: false,
   };
   searchTimeout;
   searchInput: SearchBar;
@@ -175,7 +187,7 @@ export default class HomeScreen extends React.Component {
         url: bestFormat.url,
         title: info.title,
         artist: info.author.name,
-        artwork: info.author.avatar,
+        artwork: this.state.results[i].img,
         duration: info.length_seconds,
       });
 
@@ -214,27 +226,40 @@ export default class HomeScreen extends React.Component {
                 color={Colors.textPrimary}
                 animated={true}
               />
-            ) : // <AnimatedProgressWheel
-            //   ref={elem => (this.prog[i] = elem)}
-            //   width={2}
-            //   size={20}
-            //   containerColor={Colors.backgroundPrimary}
-            //   color={Colors.textPrimary}
-            //   backgroundColor={Colors.backgroundSecondary}
-            // />
-            this.state.downloaded.includes(res.title + '.mp3') ? (
-              <Icon
-                name="ios-cloud-done"
-                size={20}
-                onPress={() => this.onClickPlay(res.href, i)}
-                style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
-              />
             ) : (
+              // this.state.downloaded.includes(res.title + '.mp3') ? (
+              //   <Icon
+              //     name="ios-cloud-done"
+              //     size={20}
+              //     onPress={() => this.onClickPlay(res.href, i)}
+              //     style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
+              //   />
+              // ) : (
+              //   <Icon
+              //     name="ios-cloud-download"
+              //     size={20}
+              //     onPress={() => this.onClickDownload(res.href, i)}
+              //     style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
+              //   />
+              // )
               <Icon
-                name="ios-cloud-download"
+                name="md-more"
+                style={{
+                  paddingLeft: 30,
+                  paddingVertical: 10,
+                  color: 'grey',
+                  marginRight: 0,
+                  paddingRight: 7,
+                }}
                 size={20}
-                onPress={() => this.onClickDownload(res.href, i)}
-                style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
+                color={Colors.textPrimary}
+                onPress={() =>
+                  this.props.navigation.navigate('Menu', {
+                    avatar: res.img,
+                    title: res.title,
+                    artist: res.artist,
+                  })
+                }
               />
             )
           }
@@ -314,6 +339,45 @@ export default class HomeScreen extends React.Component {
             }}
           /> */}
         </View>
+        {this.state.isMenuOpened ? (
+          <TouchableHighlight
+            onPress={() => this.setState({isMenuOpened: false})}
+            style={searchStyles.overlay}>
+            <View style={searchStyles.fromBottom}>
+              <View style={{alignItems: 'center'}}>
+                <Image
+                  source={require('../Images/Untitled.png')}
+                  style={searchStyles.image}
+                />
+                <Text
+                  style={{
+                    color: Colors.textPrimary,
+                    marginBottom: 5,
+                    fontSize: 25,
+                  }}>
+                  The Weeknd - After Hours
+                </Text>
+                <Text
+                  style={{
+                    color: Colors.textSecondary,
+                    marginBottom: 20,
+                    fontSize: 20,
+                  }}>
+                  The Weeknd
+                </Text>
+              </View>
+              <View style={searchStyles.option}>
+                <Text style={{color: Colors.textPrimary}}>Add to playlist</Text>
+              </View>
+              <View style={searchStyles.option}>
+                <Text style={{color: Colors.textPrimary}}>Add to Queue</Text>
+              </View>
+              <View style={searchStyles.option}>
+                <Text style={{color: Colors.textPrimary}}>Like</Text>
+              </View>
+            </View>
+          </TouchableHighlight>
+        ) : null}
       </View>
     );
   }

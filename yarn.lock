@@ -5299,6 +5299,11 @@ react-native-parse-html@^2.2.6:
   dependencies:
     react-native-stream "^0.1.0"
 
+react-native-popup-menu@^0.15.7:
+  version "0.15.7"
+  resolved "https://registry.yarnpkg.com/react-native-popup-menu/-/react-native-popup-menu-0.15.7.tgz#ddffa8aa6e5d7d11533947921e9bdf94cd7fc7d0"
+  integrity sha512-TgPVGQdsHPgynn+mMpTX51QKKhavDXI3tA879zylRUBMrxfNiR3gAWNanI1Sd5X4Sv0tZ1/A33k/gNTwciMDDg==
+
 "react-native-progress@https://github.com/oblador/react-native-progress":
   version "4.1.2"
   resolved "https://github.com/oblador/react-native-progress#835a487607ff5780d910ba582c777f13ca696ced"

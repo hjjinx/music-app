@@ -28,12 +28,6 @@ const HomeStackNavigator = createStackNavigator(
   },
   {
     headerMode: 'none',
-    // cardStyle: {shadowColor: 'transparent'},
-    // transitionConfig: () => ({
-    //   containerStyle: {
-    //     backgroundColor: 'transparent',
-    //   },
-    // }),
   },
 );
 

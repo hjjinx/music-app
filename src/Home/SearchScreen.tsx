@@ -14,13 +14,13 @@ import RNFetchBlob from 'rn-fetch-blob';
 // import '@react-native-community/art';
 import {Circle as ProgCircle} from 'react-native-progress';
 import TrackPlayer from 'react-native-track-player';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {ScrollView} from 'react-native-gesture-handler';
 
 import Colors from '../Styles/Colors';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {search} from '../SearchAPI/youtubeSearch';
-import {ScrollView} from 'react-native-gesture-handler';
+import {search} from '../misc/youtubeSearch.js';
 import styles from '../Styles/Home';
-import searchStyles from '../Styles/Search';
+import {getBestFormat} from '../misc/ytdl-wrapper';
 
 export default class HomeScreen extends React.Component {
   constructor(props) {
@@ -33,7 +33,6 @@ export default class HomeScreen extends React.Component {
     downloading: new Array(20).map(i => null),
     // Will contain list of all the songs present in the /Music folder
     downloaded: [],
-    isMenuOpened: false,
   };
   searchTimeout;
   searchInput: SearchBar;
@@ -156,30 +155,18 @@ export default class HomeScreen extends React.Component {
           TrackPlayer.CAPABILITY_PLAY,
           TrackPlayer.CAPABILITY_PAUSE,
           TrackPlayer.CAPABILITY_STOP,
+          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
         ],
 
         // An array of capabilities that will show up when the notification is in the compact form on Android
         compactCapabilities: [
           TrackPlayer.CAPABILITY_PLAY,
           TrackPlayer.CAPABILITY_PAUSE,
+          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
         ],
       });
 
-      let info;
-      try {
-        info = await ytdl.getInfo(href);
-      } catch (err) {
-        console.log('YTDL issue..');
-        console.log(err);
-      }
-      let bestFormat;
-      if (!info.formats) return;
-      let maxBitrate = 0;
-      for (let format of info.formats)
-        if (format.audioBitrate && format.audioBitrate > maxBitrate) {
-          maxBitrate = format.audioBitrate;
-          bestFormat = format;
-        }
+      const {bestFormat, info} = await getBestFormat(href);
       console.log(info);
 
       await TrackPlayer.add({
@@ -258,6 +245,7 @@ export default class HomeScreen extends React.Component {
                     avatar: res.img,
                     title: res.title,
                     artist: res.artist,
+                    href: res.href,
                   })
                 }
               />
@@ -339,45 +327,6 @@ export default class HomeScreen extends React.Component {
             }}
           /> */}
         </View>
-        {this.state.isMenuOpened ? (
-          <TouchableHighlight
-            onPress={() => this.setState({isMenuOpened: false})}
-            style={searchStyles.overlay}>
-            <View style={searchStyles.fromBottom}>
-              <View style={{alignItems: 'center'}}>
-                <Image
-                  source={require('../Images/Untitled.png')}
-                  style={searchStyles.image}
-                />
-                <Text
-                  style={{
-                    color: Colors.textPrimary,
-                    marginBottom: 5,
-                    fontSize: 25,
-                  }}>
-                  The Weeknd - After Hours
-                </Text>
-                <Text
-                  style={{
-                    color: Colors.textSecondary,
-                    marginBottom: 20,
-                    fontSize: 20,
-                  }}>
-                  The Weeknd
-                </Text>
-              </View>
-              <View style={searchStyles.option}>
-                <Text style={{color: Colors.textPrimary}}>Add to playlist</Text>
-              </View>
-              <View style={searchStyles.option}>
-                <Text style={{color: Colors.textPrimary}}>Add to Queue</Text>
-              </View>
-              <View style={searchStyles.option}>
-                <Text style={{color: Colors.textPrimary}}>Like</Text>
-              </View>
-            </View>
-          </TouchableHighlight>
-        ) : null}
       </View>
     );
   }

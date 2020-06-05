@@ -23,6 +23,10 @@ import styles from '../Styles/Home';
 import {getBestFormat} from '../misc/ytdl-wrapper';
 
 export default class HomeScreen extends React.Component {
+  static navigationOptions = {
+    tabBarVisible: false,
+  };
+
   constructor(props) {
     super(props);
   }
@@ -246,6 +250,9 @@ export default class HomeScreen extends React.Component {
                     title: res.title,
                     artist: res.artist,
                     href: res.href,
+                    downloaded: this.state.downloaded.includes(
+                      res.title + '.mp3',
+                    ),
                   })
                 }
               />

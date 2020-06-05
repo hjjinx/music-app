@@ -22,13 +22,9 @@ const MainTabNavigator = createBottomTabNavigator(
         let iconName;
         if (routeName === 'Main') {
           iconName = focused ? 'ios-home' : 'ios-home';
-          // Sometimes we want to add badges to some icons.
-          // You can check the implementation below.
         } else if (routeName === 'Library') {
           iconName = focused ? 'ios-musical-notes' : 'ios-musical-notes';
         }
-
-        // You can return any component that you like here!
         return <Icon name={iconName} size={30} color={tintColor} />;
       },
     }),

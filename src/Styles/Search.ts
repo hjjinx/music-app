@@ -2,27 +2,29 @@ import {StyleSheet} from 'react-native';
 import Colors from './Colors';
 import {Dimensions} from 'react-native';
 
-var fullWidth = Dimensions.get('window').width; //full width
+var fullWidth = Dimensions.get('window').width;
+var fullHeight = Dimensions.get('window').height;
 export default StyleSheet.create({
   overlay: {
     flex: 1,
     position: 'absolute',
     bottom: 0,
-    opacity: 0.75,
-    backgroundColor: 'black',
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
     width: '100%',
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
   fromBottom: {
-    padding: 15,
+    padding: 0,
+    opacity: 1,
     position: 'absolute',
     // left: '50%',
     bottom: 0,
   },
   option: {
     flex: 1,
+    opacity: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -32,12 +34,22 @@ export default StyleSheet.create({
     backgroundColor: Colors.backgroundSecondary,
   },
   image: {
-    marginBottom: 50,
+    marginBottom: 30,
     width: 200,
     height: 200,
     margin: 0,
     padding: 0,
     borderRadius: 200,
     // resizeMode: 'center',
+  },
+  backgroundOverlay: {
+    position: 'absolute',
+    flex: 1,
+    left: 10,
+    bottom: 0,
+    opacity: 1,
+    backgroundColor: 'black',
+    width: fullWidth,
+    height: '100%',
   },
 });

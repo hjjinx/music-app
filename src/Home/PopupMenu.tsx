@@ -9,6 +9,9 @@ import Colors from '../Styles/Colors';
 import {getBestFormat} from '../misc/ytdl-wrapper';
 
 export default class PopupMenu extends React.Component {
+  static navigationOptions = {
+    tabBarVisible: false,
+  };
   addToPlaylist = () => {
     console.log('adding to playlist');
   };
@@ -83,11 +86,7 @@ export default class PopupMenu extends React.Component {
             </Text>
           </View>
           <TouchableHighlight onPress={this.addToPlaylist}>
-            <View
-              style={[
-                searchStyles.option,
-                {borderBottomColor: '#777', borderBottomWidth: 1},
-              ]}>
+            <View style={searchStyles.option}>
               <View style={{flex: 3, alignItems: 'flex-end'}}>
                 <Icon
                   name="playlist-add"
@@ -113,11 +112,7 @@ export default class PopupMenu extends React.Component {
             </View>
           </TouchableHighlight>
           <TouchableHighlight onPress={this.addToQueue}>
-            <View
-              style={[
-                searchStyles.option,
-                {borderBottomColor: '#777', borderBottomWidth: 1},
-              ]}>
+            <View style={[searchStyles.option]}>
               <View style={{flex: 3, alignItems: 'flex-end'}}>
                 <Icon
                   name="queue"
@@ -143,11 +138,7 @@ export default class PopupMenu extends React.Component {
             </View>
           </TouchableHighlight>
           <TouchableHighlight onPress={this.like}>
-            <View
-              style={[
-                searchStyles.option,
-                {borderBottomColor: '#777', borderBottomWidth: 1},
-              ]}>
+            <View style={[searchStyles.option]}>
               <View style={{flex: 3, alignItems: 'flex-end'}}>
                 <AntIcon
                   name="hearto"
@@ -175,15 +166,27 @@ export default class PopupMenu extends React.Component {
           <TouchableHighlight onPress={this.like}>
             <View style={searchStyles.option}>
               <View style={{flex: 3, alignItems: 'flex-end'}}>
-                <Icon
-                  name="cloud-download"
-                  style={{
-                    color: 'grey',
-                    marginRight: 10,
-                  }}
-                  size={20}
-                  color={Colors.textPrimary}
-                />
+                {this.props.navigation.getParam('downloaded') ? (
+                  <Icon
+                    name="cloud-done"
+                    style={{
+                      color: 'grey',
+                      marginRight: 10,
+                    }}
+                    size={20}
+                    color={Colors.textPrimary}
+                  />
+                ) : (
+                  <Icon
+                    name="cloud-download"
+                    style={{
+                      color: 'grey',
+                      marginRight: 10,
+                    }}
+                    size={20}
+                    color={Colors.textPrimary}
+                  />
+                )}
               </View>
               <View style={{flex: 3}}>
                 <Text
@@ -193,6 +196,7 @@ export default class PopupMenu extends React.Component {
                     fontSize: 17,
                   }}>
                   Download
+                  {this.props.navigation.getParam('downloaded') ? 'ed' : ''}
                 </Text>
               </View>
               <View style={{flex: 3}} />

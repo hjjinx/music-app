@@ -21,10 +21,10 @@ export default class PopupMenu extends React.Component {
     tabBarVisible: false,
   };
   state = {downloadStatus: 0};
-  componentDidMount() {
-    this.setState({
-      downloadStatus: this.props.navigation.getParam('downloaded') ? 2 : 0,
-    });
+  async componentDidMount() {
+    const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
+    if (downloaded.includes(this.props.navigation.getParam('title') + '.webm'))
+      this.setState({downloadStatus: 2});
   }
 
   addToPlaylist = () => {
@@ -72,7 +72,6 @@ export default class PopupMenu extends React.Component {
   onClickDownload = async () => {
     this.setState({downloadStatus: 1});
     if (this.state.downloadStatus === 2) return;
-    console.log('called');
     // let newDownloading = Object.assign({}, this.state.downloading);
     // newDownloading[i] = 0;
     // this.setState({downloading: newDownloading});
@@ -98,30 +97,42 @@ export default class PopupMenu extends React.Component {
       console.log(err);
       return;
     }
-    console.log('downloading');
+    console.log('Info:');
+    console.log(info);
     let bestFormat;
     if (!info.formats) return;
     let maxBitrate = 0;
     for (let format of info.formats)
-      if (format.audioBitrate && format.audioBitrate > maxBitrate) {
+      if (
+        format.audioBitrate &&
+        format.audioBitrate > maxBitrate &&
+        format.mimeType == 'audio/webm; codecs="opus"'
+      ) {
         maxBitrate = format.audioBitrate;
         bestFormat = format;
       }
+    if (!bestFormat) {
+      console.log('Unable to get a good format');
+      alert('Unable to download!');
+      return;
+    }
+    console.log('best format:');
+    console.log(bestFormat);
     // alert(
     //   `Download started! The audio file is being saved in ${
     //     RNFetchBlob.fs.dirs.MusicDir
-    //   }/${info.title}.mp3`,
+    //   }/${info.title}.webm`,
     // );
     RNFetchBlob.config({
       addAndroidDownloads: {
         useDownloadManager: true,
-        path: RNFetchBlob.fs.dirs.MusicDir + `/${info.title}.mp3`,
+        path: RNFetchBlob.fs.dirs.MusicDir + `/${info.title}.webm`,
         // Optional, override notification setting (default to true)
         notification: true,
         // Optional, but recommended since android DownloadManager will fail when
         // the url does not contains a file extension, by default the mime type will be text/plain
         title: `Downloading ${this.props.navigation.getParam('title')}`,
-        mime: 'audio/mpeg',
+        mime: 'audio/webm',
         description: this.props.navigation.getParam('artist'),
         mediaScannable: true,
       },

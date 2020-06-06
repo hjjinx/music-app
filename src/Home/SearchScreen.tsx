@@ -140,7 +140,7 @@ export default class HomeScreen extends React.Component {
                 animated={true}
               />
             ) : (
-              // this.state.downloaded.includes(res.title + '.mp3') ? (
+              // this.state.downloaded.includes(res.title + '.webm') ? (
               //   <Icon
               //     name="ios-cloud-done"
               //     size={20}
@@ -172,9 +172,6 @@ export default class HomeScreen extends React.Component {
                     title: res.title,
                     artist: res.artist,
                     href: res.href,
-                    downloaded: this.state.downloaded.includes(
-                      res.title + '.mp3',
-                    ),
                   })
                 }
               />

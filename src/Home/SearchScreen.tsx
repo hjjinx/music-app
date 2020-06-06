@@ -3,8 +3,7 @@ import {
   Text,
   Keyboard,
   PermissionsAndroid,
-  TouchableHighlight,
-  Image,
+  AsyncStorage,
 } from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
@@ -69,85 +68,8 @@ export default class HomeScreen extends React.Component {
         // send the request for searching YouTube here
         const results = await search(q);
         this.setState({searching: false, results});
-      }, 500);
+      }, 50);
     });
-  };
-
-  onClickDownload = async (href, i) => {
-    let newDownloading = Object.assign({}, this.state.downloading);
-    newDownloading[i] = 0;
-    this.setState({downloading: newDownloading});
-
-    if (
-      !(await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      )) ||
-      !(await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      ))
-    )
-      await requestFilePermission();
-    let info;
-    try {
-      info = await ytdl.getInfo(href);
-    } catch (err) {
-      let newDownloading = Object.assign({}, this.state.downloading);
-      delete newDownloading[i];
-      this.setState({downloading: newDownloading});
-      alert('There was an error in fetching the details! Please try again');
-      console.log('Error in getting song info');
-      console.log(err);
-      return;
-    }
-
-    let bestFormat;
-    if (!info.formats) return;
-    let maxBitrate = 0;
-    for (let format of info.formats)
-      if (format.audioBitrate && format.audioBitrate > maxBitrate) {
-        maxBitrate = format.audioBitrate;
-        bestFormat = format;
-      }
-    // alert(
-    //   `Download started! The audio file is being saved in ${
-    //     RNFetchBlob.fs.dirs.MusicDir
-    //   }/${info.title}.mp3`,
-    // );
-    RNFetchBlob.config({
-      path: RNFetchBlob.fs.dirs.MusicDir + `/${info.title}.mp3`,
-    })
-      .fetch('GET', bestFormat.url)
-      .progress({interval: 10}, (received, total) => {
-        let newDownloading = Object.assign({}, this.state.downloading);
-        newDownloading[i] = received / total;
-        // this.prog[i].animateTo(
-        //   (received * 100) / total,
-        //   2000,
-        //   Easing.bezier(0, 0.62, 1, 1),
-        // );
-        this.setState({downloading: newDownloading});
-      })
-      .then(res => {
-        let newDownloading = Object.assign({}, this.state.downloading);
-        delete newDownloading[i];
-        let newDownloaded = this.state.downloaded.slice();
-        newDownloaded.push(info.title + '.mp3');
-        this.setState({downloading: newDownloading, downloaded: newDownloaded});
-        alert(`${info.title} has been sucessfully downloaded!`);
-      })
-      .catch(err => {
-        let newDownloading = Object.assign({}, this.state.downloading);
-        delete newDownloading[i];
-        this.setState({downloading: newDownloading});
-        alert('There was an error with the download! Please try again');
-        console.log('Song not downloaded completely');
-        console.error(err);
-      });
-
-    // console.log(maxBitrate);
-    // console.log(bestFormat);
-    // start downloading the song here
-    // /storage/emulated/0/
   };
 
   onClickPlay = async (href, i) => {

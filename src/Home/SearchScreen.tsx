@@ -34,8 +34,6 @@ export default class HomeScreen extends React.Component {
     searching: false,
     results: [],
     downloading: new Array(20).map(i => null),
-    // Will contain list of all the songs present in the /Music folder
-    downloaded: [],
   };
   searchTimeout;
   searchInput: SearchBar;
@@ -50,8 +48,6 @@ export default class HomeScreen extends React.Component {
       ))
     )
       await requestFilePermission();
-    const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
-    this.setState({downloaded});
     this.searchInput.focus();
   }
 
@@ -125,57 +121,26 @@ export default class HomeScreen extends React.Component {
           onPress={() => this.onClickPlay(res.href, i)}
           leftAvatar={{source: {uri: res.img}}}
           rightElement={
-            this.state.downloading[i] != null ? (
-              <ProgCircle
-                progress={this.state.downloading[i]}
-                unfilledColor={Colors.backgroundSecondary}
-                showsText={true}
-                // ref={elem => (this.prog[i] = elem)}
-                size={20}
-                thickness={1}
-                textStyle={{fontSize: 8}}
-                formatText={progress => `${Math.round(progress * 100)}`}
-                borderWidth={0}
-                color={Colors.textPrimary}
-                animated={true}
-              />
-            ) : (
-              // this.state.downloaded.includes(res.title + '.webm') ? (
-              //   <Icon
-              //     name="ios-cloud-done"
-              //     size={20}
-              //     onPress={() => this.onClickPlay(res.href, i)}
-              //     style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
-              //   />
-              // ) : (
-              //   <Icon
-              //     name="ios-cloud-download"
-              //     size={20}
-              //     onPress={() => this.onClickDownload(res.href, i)}
-              //     style={{paddingLeft: 30, paddingVertical: 10, color: 'grey'}}
-              //   />
-              // )
-              <Icon
-                name="md-more"
-                style={{
-                  paddingLeft: 30,
-                  paddingVertical: 10,
-                  color: 'grey',
-                  marginRight: 0,
-                  paddingRight: 7,
-                }}
-                size={20}
-                color={Colors.textPrimary}
-                onPress={() =>
-                  this.props.navigation.navigate('Menu', {
-                    avatar: res.img,
-                    title: res.title,
-                    artist: res.artist,
-                    href: res.href,
-                  })
-                }
-              />
-            )
+            <Icon
+              name="md-more"
+              style={{
+                paddingLeft: 30,
+                paddingVertical: 10,
+                color: 'grey',
+                marginRight: 0,
+                paddingRight: 7,
+              }}
+              size={20}
+              color={Colors.textPrimary}
+              onPress={() =>
+                this.props.navigation.navigate('Menu', {
+                  avatar: res.img,
+                  title: res.title,
+                  artist: res.artist,
+                  href: res.href,
+                })
+              }
+            />
           }
           containerStyle={{
             backgroundColor: Colors.backgroundPrimary,

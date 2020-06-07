@@ -5,6 +5,7 @@ import {
   Text,
   TouchableHighlight,
   PermissionsAndroid,
+  AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
@@ -20,9 +21,13 @@ export default class PopupMenu extends React.Component {
   static navigationOptions = {
     tabBarVisible: false,
   };
-  state = {downloadStatus: 0};
+  state = {downloadStatus: 0, liked: false};
   async componentDidMount() {
+    console.log(await AsyncStorage.getItem('liked_songs'));
     const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
+    let likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
+    if (likedSongs.includes(this.props.navigation.getParam('title')))
+      this.setState({liked: true});
     if (downloaded.includes(this.props.navigation.getParam('title') + '.webm'))
       this.setState({downloadStatus: 2});
   }
@@ -65,8 +70,28 @@ export default class PopupMenu extends React.Component {
     TrackPlayer.play();
     console.log('adding to queue.');
   };
-  like = () => {
-    console.log('Liking..');
+  like = async () => {
+    try {
+      let likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
+      // Unike song if already liked
+      if (likedSongs.includes(this.props.navigation.getParam('title'))) {
+        likedSongs.splice(
+          likedSongs.indexOf(this.props.navigation.getParam('title')),
+          1,
+        );
+        this.setState({liked: false});
+      }
+      // Like song if not already liked
+      else {
+        likedSongs.push(this.props.navigation.getParam('title'));
+        this.setState({liked: true});
+      }
+      await AsyncStorage.setItem('liked_songs', JSON.stringify(likedSongs));
+    } catch (err) {
+      console.log('Error in liking song..');
+      console.log(err);
+      alert('There was an error! Please try again.');
+    }
   };
 
   onClickDownload = async () => {
@@ -245,9 +270,9 @@ export default class PopupMenu extends React.Component {
             <View style={[searchStyles.option]}>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <AntIcon
-                  name="hearto"
+                  name={this.state.liked ? 'heart' : 'hearto'}
                   style={{
-                    color: 'grey',
+                    color: this.state.liked ? 'white' : 'grey',
                     marginRight: 10,
                   }}
                   size={20}
@@ -261,7 +286,7 @@ export default class PopupMenu extends React.Component {
                     textAlign: 'center',
                     fontSize: 17,
                   }}>
-                  Like
+                  Like{this.state.liked ? 'd' : ''}
                 </Text>
               </View>
               <View style={{flex: 1}} />

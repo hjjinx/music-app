@@ -20,7 +20,13 @@ export default class HomeScreen extends React.Component {
     likedSongs: [],
     isLoading: true,
   };
-  async componentDidMount() {
+
+  updateLikedSongs = async () => {
+    if (!(await AsyncStorage.getItem('liked_songs'))) {
+      await AsyncStorage.setItem('liked_songs', '[]');
+      return;
+    }
+
     const likedSongsHref = JSON.parse(
       await AsyncStorage.getItem('liked_songs'),
     );
@@ -36,6 +42,11 @@ export default class HomeScreen extends React.Component {
       });
     }
     this.setState({likedSongs, isLoading: false});
+    return likedSongs;
+  };
+
+  async componentDidMount() {
+    await this.updateLikedSongs();
   }
   openMenu = (i: number) => {
     const data = this.state.likedSongs[i];
@@ -96,7 +107,11 @@ export default class HomeScreen extends React.Component {
               onPress={() => this.props.navigation.navigate('Search')}> */}
             <SearchBar
               placeholder="Search for..."
-              onFocus={() => this.props.navigation.navigate('Search')}
+              onFocus={() =>
+                this.props.navigation.navigate('Search', {
+                  updateLikedSongs: this.updateLikedSongs,
+                })
+              }
               inputStyle={{
                 padding: 0,
                 margin: 0,

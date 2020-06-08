@@ -1,4 +1,10 @@
-import {View, Text, Keyboard, PermissionsAndroid} from 'react-native';
+import {
+  View,
+  Text,
+  Keyboard,
+  PermissionsAndroid,
+  BackHandler,
+} from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
@@ -26,6 +32,19 @@ export default class HomeScreen extends React.Component {
   };
   searchTimeout;
   searchInput: SearchBar;
+  backHandler;
+
+  backAction = () => {
+    console.log('called');
+    if (!this.props.navigation.getParam('updateLikedSongs')) return false;
+    this.props.navigation
+      .getParam('updateLikedSongs')()
+      .then(res => {
+        console.log(res);
+        return false;
+      });
+    return false;
+  };
 
   async componentDidMount() {
     if (
@@ -38,6 +57,15 @@ export default class HomeScreen extends React.Component {
     )
       await requestFilePermission();
     this.searchInput.focus();
+
+    this.backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.backAction,
+    );
+  }
+
+  async componentWillUnmount() {
+    this.backHandler.remove();
   }
 
   onSearchChange = value => {

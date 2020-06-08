@@ -16,6 +16,7 @@ import ytdl from 'ytdl-core';
 import searchStyles from '../Styles/Search';
 import Colors from '../Styles/Colors';
 import {getBestFormat} from '../misc/ytdl-wrapper';
+import playSong from '../misc/playSong';
 
 export default class PopupMenu extends React.Component {
   static navigationOptions = {
@@ -181,7 +182,16 @@ export default class PopupMenu extends React.Component {
         console.error(err);
       });
   };
-
+  onClickPlay = async () => {
+    try {
+      await playSong(this.props.navigation.getParam('href'));
+    } catch (err) {
+      console.log('Error in playing song');
+      console.log(err);
+      alert('There was an error! Please try again');
+    }
+    console.log('Will play now..');
+  };
   render() {
     return (
       <TouchableHighlight
@@ -321,6 +331,32 @@ export default class PopupMenu extends React.Component {
                     : this.state.downloadStatus === 0
                     ? ''
                     : 'ing'}
+                </Text>
+              </View>
+              <View style={{flex: 1}} />
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={this.onClickPlay}>
+            <View style={searchStyles.option}>
+              <View style={{flex: 1, alignItems: 'flex-end'}}>
+                <Icon
+                  name={'play-arrow'}
+                  style={{
+                    color: 'grey',
+                    marginRight: 10,
+                  }}
+                  size={20}
+                  color={Colors.textPrimary}
+                />
+              </View>
+              <View style={{flex: 1}}>
+                <Text
+                  style={{
+                    color: Colors.textPrimary,
+                    textAlign: 'center',
+                    fontSize: 17,
+                  }}>
+                  Play
                 </Text>
               </View>
               <View style={{flex: 1}} />

@@ -97,7 +97,7 @@ export default class HomeScreen extends React.Component {
         title: info.title,
         artist: info.author.name,
         artwork: this.state.results[i].img,
-        duration: info.length_seconds,
+        duration: parseInt(info.length_seconds),
       });
 
       await TrackPlayer.play();

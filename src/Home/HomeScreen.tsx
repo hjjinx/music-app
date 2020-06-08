@@ -5,6 +5,7 @@ import {
   AsyncStorage,
   TouchableHighlight,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
@@ -12,7 +13,6 @@ import ytdl from 'ytdl-core';
 
 import Styles from '../Styles/Home';
 import {ScrollView} from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../Styles/Colors';
 
 export default class HomeScreen extends React.Component {
@@ -136,7 +136,27 @@ export default class HomeScreen extends React.Component {
                 <Text style={Styles.headingText}>Liked Songs</Text>
               </View>
               <View style={Styles.musicList}>
-                <ScrollView horizontal={true}>{likedSongsToRender}</ScrollView>
+                <ScrollView horizontal={true}>
+                  {likedSongsToRender.length > 0 ? (
+                    likedSongsToRender
+                  ) : (
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        width: Dimensions.get('window').width,
+                      }}>
+                      <Text
+                        adjustsFontSizeToFit={true}
+                        style={{
+                          color: Colors.textPrimary,
+                          textAlign: 'center',
+                          fontSize: 15,
+                        }}>
+                        You haven't liked any songs yet!
+                      </Text>
+                    </View>
+                  )}
+                </ScrollView>
               </View>
             </View>
           </View>

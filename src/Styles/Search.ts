@@ -3,7 +3,7 @@ import Colors from './Colors';
 import {Dimensions} from 'react-native';
 
 var fullWidth = Dimensions.get('window').width;
-var fullHeight = Dimensions.get('window').height;
+
 export default StyleSheet.create({
   overlay: {
     flex: 1,

@@ -18,8 +18,6 @@
     "react-native-cheerio": "^1.0.0-rc.4",
     "react-native-elements": "^2.0.0",
     "react-native-gesture-handler": "^1.6.1",
-    "react-native-popup-menu": "^0.15.7",
-    "react-native-progress": "https://github.com/oblador/react-native-progress",
     "react-native-reanimated": "^1.8.0",
     "react-native-safe-area-context": "^1.0.0",
     "react-native-screens": "^2.7.0",

@@ -1,25 +1,14 @@
-import {
-  View,
-  Text,
-  Keyboard,
-  PermissionsAndroid,
-  AsyncStorage,
-} from 'react-native';
+import {View, Text, Keyboard, PermissionsAndroid} from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
-import ytdl from 'ytdl-core';
-import RNFetchBlob from 'rn-fetch-blob';
-// import '@react-native-community/art';
-import {Circle as ProgCircle} from 'react-native-progress';
-import TrackPlayer from 'react-native-track-player';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {ScrollView} from 'react-native-gesture-handler';
 
 import Colors from '../Styles/Colors';
 import {search} from '../misc/youtubeSearch.js';
 import styles from '../Styles/Home';
-import {getBestFormat} from '../misc/ytdl-wrapper';
+import playSong from '../misc/playSong';
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -68,42 +57,13 @@ export default class HomeScreen extends React.Component {
     });
   };
 
-  onClickPlay = async (href, i) => {
+  onClickPlay = async href => {
     try {
-      await TrackPlayer.setupPlayer();
-      TrackPlayer.updateOptions({
-        ratingType: TrackPlayer.RATING_5_STARS,
-        capabilities: [
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_STOP,
-          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-        ],
-
-        // An array of capabilities that will show up when the notification is in the compact form on Android
-        compactCapabilities: [
-          TrackPlayer.CAPABILITY_PLAY,
-          TrackPlayer.CAPABILITY_PAUSE,
-          TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
-        ],
-      });
-
-      const {bestFormat, info} = await getBestFormat(href);
-      console.log(info);
-
-      await TrackPlayer.add({
-        id: '1',
-        url: bestFormat.url,
-        title: info.title,
-        artist: info.author.name,
-        artwork: this.state.results[i].img,
-        duration: parseInt(info.length_seconds),
-      });
-
-      await TrackPlayer.play();
+      await playSong(href);
     } catch (err) {
-      console.log('Erorr in playing sound...');
+      console.log('Error in playing song');
       console.log(err);
+      alert('There was an error! Please try again');
     }
   };
 
@@ -118,7 +78,7 @@ export default class HomeScreen extends React.Component {
           subtitle={res.artist}
           subtitleStyle={{color: Colors.textSecondary}}
           bottomDivider
-          onPress={() => this.onClickPlay(res.href, i)}
+          onPress={() => this.onClickPlay(res.href)}
           leftAvatar={{source: {uri: res.img}}}
           rightElement={
             <Icon

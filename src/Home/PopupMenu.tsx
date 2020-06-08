@@ -190,7 +190,6 @@ export default class PopupMenu extends React.Component {
       console.log(err);
       alert('There was an error! Please try again');
     }
-    console.log('Will play now..');
   };
   render() {
     return (

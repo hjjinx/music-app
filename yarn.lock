@@ -862,7 +862,7 @@
     "@types/yargs" "^15.0.0"
     chalk "^3.0.0"
 
-"@react-native-community/art@^1.1.2", "@react-native-community/art@https://github.com/react-native-community/art":
+"@react-native-community/art@https://github.com/react-native-community/art":
   version "1.2.0"
   resolved "https://github.com/react-native-community/art#95bad24a33dcd3ed8563a5021deccad461adb662"
   dependencies:
@@ -5298,18 +5298,6 @@ react-native-parse-html@^2.2.6:
   integrity sha1-IfKPl7OEB3hHWbxZ4kS1EQnZzIc=
   dependencies:
     react-native-stream "^0.1.0"
-
-react-native-popup-menu@^0.15.7:
-  version "0.15.7"
-  resolved "https://registry.yarnpkg.com/react-native-popup-menu/-/react-native-popup-menu-0.15.7.tgz#ddffa8aa6e5d7d11533947921e9bdf94cd7fc7d0"
-  integrity sha512-TgPVGQdsHPgynn+mMpTX51QKKhavDXI3tA879zylRUBMrxfNiR3gAWNanI1Sd5X4Sv0tZ1/A33k/gNTwciMDDg==
-
-"react-native-progress@https://github.com/oblador/react-native-progress":
-  version "4.1.2"
-  resolved "https://github.com/oblador/react-native-progress#835a487607ff5780d910ba582c777f13ca696ced"
-  dependencies:
-    "@react-native-community/art" "^1.1.2"
-    prop-types "^15.7.2"
 
 react-native-ratings@^6.5.0:
   version "6.5.0"

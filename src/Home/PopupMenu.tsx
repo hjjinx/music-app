@@ -23,10 +23,9 @@ export default class PopupMenu extends React.Component {
   };
   state = {downloadStatus: 0, liked: false};
   async componentDidMount() {
-    console.log(await AsyncStorage.getItem('liked_songs'));
     const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
     let likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
-    if (likedSongs.includes(this.props.navigation.getParam('title')))
+    if (likedSongs.includes(this.props.navigation.getParam('href')))
       this.setState({liked: true});
     if (downloaded.includes(this.props.navigation.getParam('title') + '.webm'))
       this.setState({downloadStatus: 2});
@@ -65,7 +64,7 @@ export default class PopupMenu extends React.Component {
       url: bestFormat.url,
       title: this.props.navigation.getParam('title'),
       artist: this.props.navigation.getParam('artist'),
-      artwork: this.props.navigation.getParam('img'),
+      artwork: this.props.navigation.getParam('image'),
     });
     TrackPlayer.play();
     console.log('adding to queue.');
@@ -74,16 +73,16 @@ export default class PopupMenu extends React.Component {
     try {
       let likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
       // Unike song if already liked
-      if (likedSongs.includes(this.props.navigation.getParam('title'))) {
+      if (likedSongs.includes(this.props.navigation.getParam('href'))) {
         likedSongs.splice(
-          likedSongs.indexOf(this.props.navigation.getParam('title')),
+          likedSongs.indexOf(this.props.navigation.getParam('href')),
           1,
         );
         this.setState({liked: false});
       }
       // Like song if not already liked
       else {
-        likedSongs.push(this.props.navigation.getParam('title'));
+        likedSongs.unshift(this.props.navigation.getParam('href'));
         this.setState({liked: true});
       }
       await AsyncStorage.setItem('liked_songs', JSON.stringify(likedSongs));
@@ -191,7 +190,7 @@ export default class PopupMenu extends React.Component {
         <View style={searchStyles.fromBottom}>
           <View style={{alignItems: 'center'}}>
             <Image
-              source={{uri: this.props.navigation.getParam('avatar')}}
+              source={{uri: this.props.navigation.getParam('image')}}
               style={searchStyles.image}
             />
             <Text

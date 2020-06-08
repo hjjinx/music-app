@@ -134,7 +134,7 @@ export default class HomeScreen extends React.Component {
               color={Colors.textPrimary}
               onPress={() =>
                 this.props.navigation.navigate('Menu', {
-                  avatar: res.img,
+                  image: res.img,
                   title: res.title,
                   artist: res.artist,
                   href: res.href,
@@ -154,7 +154,9 @@ export default class HomeScreen extends React.Component {
     else if (!this.state.searching)
       listOfItems = (
         <View style={[styles.container, {paddingTop: 100}]}>
-          <Text style={{color: Colors.textPrimary}}>No Results found!</Text>
+          <Text style={{color: Colors.textPrimary, textAlign: 'center'}}>
+            No Results found!
+          </Text>
         </View>
       );
     return (

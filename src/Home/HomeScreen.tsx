@@ -1,14 +1,56 @@
-import {Text, View, Image} from 'react-native';
+import {
+  Text,
+  View,
+  Image,
+  AsyncStorage,
+  TouchableHighlight,
+  ActivityIndicator,
+} from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
+import ytdl from 'ytdl-core';
 
 import Styles from '../Styles/Home';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Colors from '../Styles/Colors';
 
 export default class HomeScreen extends React.Component {
+  state = {
+    likedSongs: [],
+    isLoading: true,
+  };
+  async componentDidMount() {
+    const likedSongsHref = JSON.parse(
+      await AsyncStorage.getItem('liked_songs'),
+    );
+    let likedSongs = [];
+    for (let i = 0; i < likedSongsHref.length; i++) {
+      const element = likedSongsHref[i];
+      const data = await ytdl.getBasicInfo(element);
+      likedSongs.push({
+        title: data.title,
+        href: element,
+        image: data.player_response.videoDetails.thumbnail.thumbnails[2].url,
+        artist: data.author.name,
+      });
+    }
+    this.setState({likedSongs, isLoading: false});
+  }
+  openMenu = (i: number) => {
+    const data = this.state.likedSongs[i];
+    this.props.navigation.navigate('Menu', data);
+  };
   render() {
+    let likedSongsToRender = this.state.likedSongs.map((elem, i) => (
+      <TouchableHighlight onPress={() => this.openMenu(i)} key={i}>
+        <View style={Styles.track}>
+          <Image style={Styles.image} source={{uri: elem.image}} />
+          <Text style={Styles.trackName}>{elem.title.substr(0, 30)}</Text>
+        </View>
+      </TouchableHighlight>
+    ));
+
     return (
       <View style={{flex: 1}}>
         <View style={{flexDirection: 'row'}}>
@@ -78,9 +120,27 @@ export default class HomeScreen extends React.Component {
             {/* </TouchableOpacity> */}
           </View>
         </View>
-        <View style={Styles.container}>
-          <Text style={Styles.text}>Home Screen</Text>
-        </View>
+        {this.state.isLoading ? (
+          <ActivityIndicator
+            style={{
+              backgroundColor: Colors.backgroundPrimary,
+              flex: 1,
+              alignContent: 'center',
+              justifyContent: 'center',
+            }}
+          />
+        ) : (
+          <View style={Styles.container}>
+            <View style={Styles.category}>
+              <View style={Styles.heading}>
+                <Text style={Styles.headingText}>Liked Songs</Text>
+              </View>
+              <View style={Styles.musicList}>
+                <ScrollView horizontal={true}>{likedSongsToRender}</ScrollView>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
     );
   }

@@ -70,6 +70,7 @@ export default class PopupMenu extends React.Component {
     TrackPlayer.play();
     console.log('adding to queue.');
   };
+
   like = async () => {
     try {
       let likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
@@ -182,6 +183,7 @@ export default class PopupMenu extends React.Component {
         console.error(err);
       });
   };
+
   onClickPlay = async () => {
     try {
       await playSong(this.props.navigation.getParam('href'));

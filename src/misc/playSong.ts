@@ -1,5 +1,6 @@
 import TrackPlayer from 'react-native-track-player';
 import {getBestFormat} from './ytdl-wrapper';
+import {AsyncStorage} from 'react-native';
 
 export default async href => {
   try {
@@ -38,4 +39,13 @@ export default async href => {
     console.log('Erorr in playing sound...');
     console.log(err);
   }
+
+  const recentlyPlayed = JSON.parse(
+    await AsyncStorage.getItem('recentlyPlayed'),
+  );
+
+  if (recentlyPlayed[0] === href) return;
+  recentlyPlayed.unshift(href);
+  if (recentlyPlayed.length > 10) recentlyPlayed.pop();
+  await AsyncStorage.setItem('recentlyPlayed', JSON.stringify(recentlyPlayed));
 };

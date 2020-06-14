@@ -7,6 +7,7 @@ import {
 import HomeScreen from './HomeScreen';
 import SearchScreen from './SearchScreen';
 import PopupMenu from './PopupMenu';
+import playlistScreen from './playlistScreen';
 
 const HomeStackNavigator = createStackNavigator(
   {
@@ -24,6 +25,9 @@ const HomeStackNavigator = createStackNavigator(
       navigationOptions: {
         cardStyle: {backgroundColor: 'transparent'},
       },
+    },
+    Playlist: {
+      screen: playlistScreen,
     },
   },
   {

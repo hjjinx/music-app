@@ -47,6 +47,9 @@ export default class HomeScreen extends React.Component {
   async componentDidMount() {
     this.updateLikedSongs();
     this.updateRecentlyPlayed();
+    if (!(await AsyncStorage.getItem('playlists'))) {
+      await AsyncStorage.setItem('playlists', '[]');
+    }
   }
   openMenuLikedSongs = (i: number) => {
     const data = this.state.likedSongs[i];

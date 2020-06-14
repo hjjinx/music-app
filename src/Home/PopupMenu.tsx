@@ -229,7 +229,8 @@ export default class PopupMenu extends React.Component {
               {this.props.navigation.getParam('artist')}
             </Text>
           </View>
-          <TouchableHighlight onPress={this.addToPlaylist}>
+          <TouchableHighlight
+            onPress={() => this.props.navigation.navigate('Playlist')}>
             <View style={searchStyles.option}>
               <View style={{flex: 1, alignItems: 'flex-end'}}>
                 <Icon

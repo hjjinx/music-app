@@ -109,8 +109,9 @@ export default class PopupMenu extends React.Component {
   };
 
   onClickDownload = async () => {
+    if (this.state.downloadStatus === 2 || this.state.downloadStatus === 1)
+      return;
     this.setState({downloadStatus: 1});
-    if (this.state.downloadStatus === 2) return;
     // let newDownloading = Object.assign({}, this.state.downloading);
     // newDownloading[i] = 0;
     // this.setState({downloading: newDownloading});
@@ -136,8 +137,6 @@ export default class PopupMenu extends React.Component {
       console.log(err);
       return;
     }
-    console.log('Info:');
-    console.log(info);
     let bestFormat;
     if (!info.formats) return;
     let maxBitrate = 0;
@@ -155,13 +154,6 @@ export default class PopupMenu extends React.Component {
       alert('Unable to download!');
       return;
     }
-    console.log('best format:');
-    console.log(bestFormat);
-    // alert(
-    //   `Download started! The audio file is being saved in ${
-    //     RNFetchBlob.fs.dirs.MusicDir
-    //   }/${info.title}.webm`,
-    // );
     RNFetchBlob.config({
       addAndroidDownloads: {
         useDownloadManager: true,

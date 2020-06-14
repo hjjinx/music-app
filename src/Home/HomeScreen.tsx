@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
-import ytdl from 'ytdl-core';
 
 import Styles from '../Styles/Home';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -19,13 +18,12 @@ export default class HomeScreen extends React.Component {
   state = {
     likedSongs: [],
     recentlyPlayed: [],
-    isLoading: false,
   };
 
   updateLikedSongs = async () => {
     if (!(await AsyncStorage.getItem('liked_songs'))) {
       await AsyncStorage.setItem('liked_songs', '[]');
-      this.setState({likedSongs: [], isLoading: false});
+      this.setState({likedSongs: []});
       return;
     }
 
@@ -36,7 +34,7 @@ export default class HomeScreen extends React.Component {
   updateRecentlyPlayed = async () => {
     if (!(await AsyncStorage.getItem('recentlyPlayed'))) {
       await AsyncStorage.setItem('recentlyPlayed', '[]');
-      this.setState({recentlyPlayed: [], isLoading: false});
+      this.setState({recentlyPlayed: []});
       return;
     }
 
@@ -155,86 +153,76 @@ export default class HomeScreen extends React.Component {
             {/* </TouchableOpacity> */}
           </View>
         </View>
-        {this.state.isLoading ? (
-          <ActivityIndicator
+
+        <View style={Styles.container}>
+          <View
             style={{
               backgroundColor: Colors.backgroundPrimary,
-              flex: 1,
-              alignContent: 'center',
-              justifyContent: 'center',
-            }}
-          />
-        ) : (
-          <View style={Styles.container}>
-            <View
-              style={{
-                backgroundColor: Colors.backgroundPrimary,
-              }}>
-              <View style={Styles.category}>
-                <View style={Styles.heading}>
-                  <Text style={Styles.headingText}>Liked Songs</Text>
-                </View>
-                <View style={Styles.musicList}>
-                  <ScrollView horizontal={true}>
-                    {likedSongsToRender.length > 0 ? (
-                      likedSongsToRender
-                    ) : (
-                      <View
-                        style={{
-                          justifyContent: 'center',
-                          width: Dimensions.get('window').width,
-                        }}>
-                        <Text
-                          adjustsFontSizeToFit={true}
-                          style={{
-                            color: Colors.textPrimary,
-                            textAlign: 'center',
-                            fontSize: 15,
-                          }}>
-                          You haven't liked any songs yet!
-                        </Text>
-                      </View>
-                    )}
-                  </ScrollView>
-                </View>
+            }}>
+            <View style={Styles.category}>
+              <View style={Styles.heading}>
+                <Text style={Styles.headingText}>Liked Songs</Text>
               </View>
-            </View>
-
-            <View
-              style={{
-                backgroundColor: Colors.backgroundPrimary,
-              }}>
-              <View style={Styles.category}>
-                <View style={Styles.heading}>
-                  <Text style={Styles.headingText}>Recently Played</Text>
-                </View>
-                <View style={Styles.musicList}>
-                  <ScrollView horizontal={true}>
-                    {recentlyPlayedToRender.length > 0 ? (
-                      recentlyPlayedToRender
-                    ) : (
-                      <View
+              <View style={Styles.musicList}>
+                <ScrollView horizontal={true}>
+                  {likedSongsToRender.length > 0 ? (
+                    likedSongsToRender
+                  ) : (
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        width: Dimensions.get('window').width,
+                      }}>
+                      <Text
+                        adjustsFontSizeToFit={true}
                         style={{
-                          justifyContent: 'center',
-                          width: Dimensions.get('window').width,
+                          color: Colors.textPrimary,
+                          textAlign: 'center',
+                          fontSize: 15,
                         }}>
-                        <Text
-                          adjustsFontSizeToFit={true}
-                          style={{
-                            color: Colors.textPrimary,
-                            textAlign: 'center',
-                            fontSize: 15,
-                          }}>
-                          You haven't played any songs yet!
-                        </Text>
-                      </View>
-                    )}
-                  </ScrollView>
-                </View>
+                        You haven't liked any songs yet!
+                      </Text>
+                    </View>
+                  )}
+                </ScrollView>
               </View>
             </View>
           </View>
-        )}
+
+          <View
+            style={{
+              backgroundColor: Colors.backgroundPrimary,
+            }}>
+            <View style={Styles.category}>
+              <View style={Styles.heading}>
+                <Text style={Styles.headingText}>Recently Played</Text>
+              </View>
+              <View style={Styles.musicList}>
+                <ScrollView horizontal={true}>
+                  {recentlyPlayedToRender.length > 0 ? (
+                    recentlyPlayedToRender
+                  ) : (
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        width: Dimensions.get('window').width,
+                      }}>
+                      <Text
+                        adjustsFontSizeToFit={true}
+                        style={{
+                          color: Colors.textPrimary,
+                          textAlign: 'center',
+                          fontSize: 15,
+                        }}>
+                        You haven't played any songs yet!
+                      </Text>
+                    </View>
+                  )}
+                </ScrollView>
+              </View>
+            </View>
+          </View>
+        </View>
       </View>
     );
   }

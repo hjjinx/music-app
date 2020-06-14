@@ -26,8 +26,11 @@ export default class PopupMenu extends React.Component {
   async componentDidMount() {
     const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
     let likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
-    if (likedSongs.includes(this.props.navigation.getParam('href')))
-      this.setState({liked: true});
+    // Unike song if already liked
+    for (const song of likedSongs) {
+      if (song.href === this.props.navigation.getParam('href'))
+        this.setState({liked: true});
+    }
     if (downloaded.includes(this.props.navigation.getParam('title') + '.webm'))
       this.setState({downloadStatus: 2});
   }
@@ -73,20 +76,30 @@ export default class PopupMenu extends React.Component {
 
   like = async () => {
     try {
+      /*
+      likedSong obejct: {title: string, href: string, image: string, artist: string}
+      */
       let likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
       // Unike song if already liked
-      if (likedSongs.includes(this.props.navigation.getParam('href'))) {
-        likedSongs.splice(
-          likedSongs.indexOf(this.props.navigation.getParam('href')),
-          1,
-        );
-        this.setState({liked: false});
+      for (let i = 0; i < likedSongs.length; i++) {
+        const song = likedSongs[i];
+        if (song.href === this.props.navigation.getParam('href')) {
+          likedSongs.splice(i, 1);
+          this.setState({liked: false});
+          await AsyncStorage.setItem('liked_songs', JSON.stringify(likedSongs));
+          return;
+        }
       }
       // Like song if not already liked
-      else {
-        likedSongs.unshift(this.props.navigation.getParam('href'));
-        this.setState({liked: true});
-      }
+
+      likedSongs.unshift({
+        href: this.props.navigation.getParam('href'),
+        title: this.props.navigation.getParam('title'),
+        image: this.props.navigation.getParam('image'),
+        artist: this.props.navigation.getParam('artist'),
+      });
+      this.setState({liked: true});
+
       await AsyncStorage.setItem('liked_songs', JSON.stringify(likedSongs));
     } catch (err) {
       console.log('Error in liking song..');

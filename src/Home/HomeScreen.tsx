@@ -19,7 +19,7 @@ export default class HomeScreen extends React.Component {
   state = {
     likedSongs: [],
     recentlyPlayed: [],
-    isLoading: true,
+    isLoading: false,
   };
 
   updateLikedSongs = async () => {
@@ -29,22 +29,8 @@ export default class HomeScreen extends React.Component {
       return;
     }
 
-    const likedSongsHref = JSON.parse(
-      await AsyncStorage.getItem('liked_songs'),
-    );
-    let likedSongs = [];
-    for (let i = 0; i < likedSongsHref.length; i++) {
-      const element = likedSongsHref[i];
-      const data = await ytdl.getBasicInfo(element);
-      likedSongs.push({
-        title: data.title,
-        href: element,
-        image: data.player_response.videoDetails.thumbnail.thumbnails[2].url,
-        artist: data.author.name,
-      });
-    }
-    this.setState({likedSongs, isLoading: false});
-    return likedSongs;
+    const likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
+    this.setState({likedSongs});
   };
 
   updateRecentlyPlayed = async () => {
@@ -54,22 +40,10 @@ export default class HomeScreen extends React.Component {
       return;
     }
 
-    const recentlyPlayedHref = JSON.parse(
+    const recentlyPlayed = JSON.parse(
       await AsyncStorage.getItem('recentlyPlayed'),
     );
-    let recentlyPlayedSongs = [];
-    for (let i = 0; i < recentlyPlayedHref.length; i++) {
-      const element = recentlyPlayedHref[i];
-      const data = await ytdl.getBasicInfo(element);
-      recentlyPlayedSongs.push({
-        title: data.title,
-        href: element,
-        image: data.player_response.videoDetails.thumbnail.thumbnails[2].url,
-        artist: data.author.name,
-      });
-    }
-    this.setState({recentlyPlayed: recentlyPlayedSongs, isLoading: false});
-    return recentlyPlayedSongs;
+    this.setState({recentlyPlayed});
   };
 
   async componentDidMount() {
@@ -96,8 +70,6 @@ export default class HomeScreen extends React.Component {
       </TouchableHighlight>
     ));
 
-    console.log(this.state.recentlyPlayed);
-
     let recentlyPlayedToRender = this.state.recentlyPlayed.map((elem, i) => (
       <TouchableHighlight
         onPress={() => this.openMenuRecentlyPlayed(i)}
@@ -108,7 +80,6 @@ export default class HomeScreen extends React.Component {
         </View>
       </TouchableHighlight>
     ));
-    console.log(recentlyPlayedToRender);
 
     return (
       <View style={{flex: 1}}>
@@ -158,6 +129,7 @@ export default class HomeScreen extends React.Component {
               onFocus={() =>
                 this.props.navigation.navigate('Search', {
                   updateLikedSongs: this.updateLikedSongs,
+                  updateRecentlyPlayed: this.updateRecentlyPlayed,
                 })
               }
               inputStyle={{

@@ -16,7 +16,7 @@ import {search} from '../misc/youtubeSearch.js';
 import styles from '../Styles/Home';
 import playSong from '../misc/playSong';
 
-export default class HomeScreen extends React.Component {
+export default class SearchScreen extends React.Component {
   static navigationOptions = {
     tabBarVisible: false,
   };
@@ -40,8 +40,14 @@ export default class HomeScreen extends React.Component {
     this.props.navigation
       .getParam('updateLikedSongs')()
       .then(res => {
-        console.log(res);
-        return false;
+        this.props.navigation
+          .getParam('updateRecentlyPlayed')()
+          .then(res => {
+            return false;
+          });
+      })
+      .catch(err => {
+        console.log(err);
       });
     return false;
   };

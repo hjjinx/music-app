@@ -22,7 +22,7 @@ export default async href => {
       ],
     });
 
-    const {bestFormat, info} = await getBestFormat(href);
+    var {bestFormat, info} = await getBestFormat(href);
     console.log(info);
 
     await TrackPlayer.add({
@@ -43,9 +43,20 @@ export default async href => {
   const recentlyPlayed = JSON.parse(
     await AsyncStorage.getItem('recentlyPlayed'),
   );
-
-  if (recentlyPlayed[0] === href) return;
-  recentlyPlayed.unshift(href);
+  console.log('before:');
+  console.log(recentlyPlayed);
+  // If this song in already one of the last 10 played songs,
+  for (let i = 0; i < recentlyPlayed.length; i++) {
+    let currSong = recentlyPlayed[i];
+    if (currSong.href === href) recentlyPlayed.splice(i, 1);
+  }
+  recentlyPlayed.unshift({
+    href: href,
+    title: info.title,
+    artist: info.author.name,
+    image: info.player_response.videoDetails.thumbnail.thumbnails[2].url,
+  });
+  console.log(recentlyPlayed);
   if (recentlyPlayed.length > 10) recentlyPlayed.pop();
   await AsyncStorage.setItem('recentlyPlayed', JSON.stringify(recentlyPlayed));
 };

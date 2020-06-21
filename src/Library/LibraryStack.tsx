@@ -13,7 +13,7 @@ const LibraryStackNavigator = createStackNavigator(
     Playlist: {
       screen: PlaylistScreen,
       navigationOptions: {
-        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
       },
     },
   },

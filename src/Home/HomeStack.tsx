@@ -17,13 +17,14 @@ const HomeStackNavigator = createStackNavigator(
     Search: {
       screen: SearchScreen,
       navigationOptions: {
-        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
       },
     },
     Menu: {
       screen: PopupMenu,
       navigationOptions: {
         cardStyle: {backgroundColor: 'transparent'},
+        cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
       },
     },
     Playlist: {

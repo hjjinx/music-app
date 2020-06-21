@@ -4,7 +4,6 @@ import {
   Image,
   AsyncStorage,
   TouchableHighlight,
-  ActivityIndicator,
   Dimensions,
 } from 'react-native';
 import React from 'react';

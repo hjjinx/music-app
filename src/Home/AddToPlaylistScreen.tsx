@@ -68,10 +68,14 @@ class playlistScreen extends Component {
       ],
       createdOn: `${date} ${month}, ${year}`,
     };
-    this.setState({playlists: [newPlaylist, ...this.state.playlists]});
-    await AsyncStorage.setItem(
-      'playlists',
-      JSON.stringify(this.state.playlists),
+    this.setState(
+      {playlists: [newPlaylist, ...this.state.playlists]},
+      async () => {
+        await AsyncStorage.setItem(
+          'playlists',
+          JSON.stringify(this.state.playlists),
+        );
+      },
     );
   };
   addToThis = async i => {

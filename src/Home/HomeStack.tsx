@@ -7,7 +7,7 @@ import {
 import HomeScreen from './HomeScreen';
 import SearchScreen from './SearchScreen';
 import PopupMenu from './PopupMenu';
-import playlistScreen from './playlistScreen';
+import playlistScreen from './AddToPlaylistScreen';
 
 const HomeStackNavigator = createStackNavigator(
   {

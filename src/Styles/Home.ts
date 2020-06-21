@@ -20,7 +20,7 @@ export default StyleSheet.create({
   headingText: {
     marginLeft: 10,
     fontSize: 30,
-    color: 'white',
+    color: Colors.blueBack,
   },
   musicList: {
     flex: 3,

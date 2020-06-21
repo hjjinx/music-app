@@ -24,6 +24,7 @@ export default class LibraryScreen extends React.Component {
     this.setState({playlists});
   }
   openPlaylist = i => {
+    this.props.navigation.navigate('Playlist', this.state.playlists[i]);
     console.log('Click on' + i);
   };
   render() {

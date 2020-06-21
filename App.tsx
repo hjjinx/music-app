@@ -4,7 +4,7 @@ import {createBottomTabNavigator} from 'react-navigation-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 import HomeStack from './src/Home/HomeStack';
-import LibraryScreen from './src/Library/LibraryScreen';
+import LibraryStack from './src/Library/LibraryStack';
 
 import colors from './src/Styles/Colors';
 import Colors from './src/Styles/Colors';
@@ -12,7 +12,7 @@ import Colors from './src/Styles/Colors';
 const MainTabNavigator = createBottomTabNavigator(
   {
     Main: HomeStack,
-    Library: LibraryScreen,
+    Library: LibraryStack,
   },
   {
     defaultNavigationOptions: ({navigation}) => ({

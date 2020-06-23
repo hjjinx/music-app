@@ -25,6 +25,28 @@ export default async href => {
     var {bestFormat, info} = await getBestFormat(href);
     console.log(info);
 
+    // Add to recentlyPlayed songs
+    const recentlyPlayed = JSON.parse(
+      await AsyncStorage.getItem('recentlyPlayed'),
+    );
+    // If this song in already one of the last 10 played songs,
+    for (let i = 0; i < recentlyPlayed.length; i++) {
+      let currSong = recentlyPlayed[i];
+      if (currSong.href === href) recentlyPlayed.splice(i, 1);
+    }
+    recentlyPlayed.unshift({
+      href: href,
+      title: info.title,
+      artist: info.author.name,
+      image: info.player_response.videoDetails.thumbnail.thumbnails[2].url,
+    });
+    if (recentlyPlayed.length > 10) recentlyPlayed.pop();
+    await AsyncStorage.setItem(
+      'recentlyPlayed',
+      JSON.stringify(recentlyPlayed),
+    );
+
+    // Play the song
     await TrackPlayer.add({
       id: '1',
       url: bestFormat.url,
@@ -39,24 +61,4 @@ export default async href => {
     console.log('Erorr in playing sound...');
     console.log(err);
   }
-
-  const recentlyPlayed = JSON.parse(
-    await AsyncStorage.getItem('recentlyPlayed'),
-  );
-  console.log('before:');
-  console.log(recentlyPlayed);
-  // If this song in already one of the last 10 played songs,
-  for (let i = 0; i < recentlyPlayed.length; i++) {
-    let currSong = recentlyPlayed[i];
-    if (currSong.href === href) recentlyPlayed.splice(i, 1);
-  }
-  recentlyPlayed.unshift({
-    href: href,
-    title: info.title,
-    artist: info.author.name,
-    image: info.player_response.videoDetails.thumbnail.thumbnails[2].url,
-  });
-  console.log(recentlyPlayed);
-  if (recentlyPlayed.length > 10) recentlyPlayed.pop();
-  await AsyncStorage.setItem('recentlyPlayed', JSON.stringify(recentlyPlayed));
 };

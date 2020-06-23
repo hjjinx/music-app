@@ -36,7 +36,12 @@ export default class LibraryScreen extends React.Component {
         onPress={() => this.openPlaylist(i)}
         title={playlist.title}
         titleStyle={{color: Colors.textPrimary}}
-        subtitle={'Created on ' + playlist.createdOn}
+        subtitle={
+          'Created on ' +
+          playlist.createdOn +
+          '\nNumber of tracks: ' +
+          playlist.tracks.length
+        }
         subtitleStyle={{color: Colors.textSecondary}}
         bottomDivider
         //   onPress={() => this.onClickPlay(res.href)}

@@ -17,7 +17,7 @@ const HomeStackNavigator = createStackNavigator(
     Search: {
       screen: SearchScreen,
       navigationOptions: {
-        cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
+        cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
       },
     },
     Menu: {

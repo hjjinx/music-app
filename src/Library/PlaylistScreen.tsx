@@ -8,11 +8,13 @@ import {
   Dimensions,
 } from 'react-native';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
+import TrackPlayer from 'react-native-track-player';
 
 import Styles from '../Styles/Home';
 import Colors from '../Styles/Colors';
 import {ListItem} from 'react-native-elements';
 import playSong from '../misc/playSong';
+import {getBestFormat} from '../misc/ytdl-wrapper';
 
 export default class PlaylistScreen extends React.Component {
   state = {
@@ -30,6 +32,27 @@ export default class PlaylistScreen extends React.Component {
       console.log('Error in playing song');
       console.log(err);
       alert('There was an error! Please try again');
+    }
+  };
+  startPlaylist = async () => {
+    try {
+      await playSong(this.state.tracks[0].href);
+    } catch (err) {
+      console.log('Error in playing song');
+      console.log(err);
+      alert('There was an error! Please try again');
+    }
+    for (let i = 1; i < this.state.tracks.length; i++) {
+      const href = this.state.tracks[i].href;
+      var {bestFormat, info} = await getBestFormat(href);
+      await TrackPlayer.add({
+        id: '1',
+        url: bestFormat.url,
+        title: info.title,
+        artist: info.author.name,
+        artwork: info.player_response.videoDetails.thumbnail.thumbnails[2].url,
+        duration: parseInt(info.length_seconds),
+      });
     }
   };
   render() {
@@ -98,7 +121,17 @@ export default class PlaylistScreen extends React.Component {
             backgroundColor: Colors.backgroundPrimary,
             height: Dimensions.get('window').height,
           }}>
-          <View style={{flex: 1, marginTop: 40, justifyContent: 'flex-start'}}>
+          <View style={{flex: 1, marginTop: 30, justifyContent: 'flex-start'}}>
+            <IconMaterial
+              name="play"
+              style={{
+                color: Colors.textPrimary,
+                textAlign: 'center',
+                marginBottom: 10,
+              }}
+              size={40}
+              onPress={this.startPlaylist}
+            />
             <View>
               <Text
                 style={[

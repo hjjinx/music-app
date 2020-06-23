@@ -58,14 +58,7 @@ class playlistScreen extends Component {
     var year = new Date().getFullYear();
     const newPlaylist = {
       title: this.state.newPlaylist,
-      tracks: [
-        {
-          href: this.props.navigation.getParam('href'),
-          title: this.props.navigation.getParam('title'),
-          artist: this.props.navigation.getParam('artist'),
-          image: this.props.navigation.getParam('image'),
-        },
-      ],
+      tracks: [],
       createdOn: `${date} ${month}, ${year}`,
     };
     this.setState(
@@ -81,13 +74,13 @@ class playlistScreen extends Component {
   addToThis = async i => {
     const playlists = this.state.playlists;
     playlists[i].tracks = [
+      ...playlists[i].tracks,
       {
         href: this.props.navigation.getParam('href'),
         title: this.props.navigation.getParam('title'),
         artist: this.props.navigation.getParam('artist'),
         image: this.props.navigation.getParam('image'),
       },
-      ...playlists[i].tracks,
     ];
     await AsyncStorage.setItem('playlists', JSON.stringify(playlists));
     this.props.navigation.goBack();

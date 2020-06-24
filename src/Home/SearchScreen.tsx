@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {ScrollView} from 'react-native-gesture-handler';
 
 import Colors from '../Styles/Colors';
-import {search} from '../misc/youtubeSearch.js';
+import {search} from '../misc/youtubeSearch';
 import styles from '../Styles/Home';
 import playSong from '../misc/playSong';
 

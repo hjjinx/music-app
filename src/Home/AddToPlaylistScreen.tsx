@@ -1,9 +1,18 @@
 import React, {Component} from 'react';
-import {View, Image, Text, AsyncStorage, Button} from 'react-native';
+import {
+  View,
+  Image,
+  Text,
+  AsyncStorage,
+  Button,
+  Dimensions,
+} from 'react-native';
 import {ListItem, Input} from 'react-native-elements';
+import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Entypo';
 
 import Colors from '../Styles/Colors';
-import Icon from 'react-native-vector-icons/Entypo';
+import {PlaylistContext} from '../DataStore/Playlist';
 
 const monthMap = [
   'January',
@@ -42,12 +51,12 @@ class playlistScreen extends Component {
     this.setState({playlists});
   }
 
-  createNew = async () => {
+  createNew = async playlists => {
     if (this.state.newPlaylist === '') {
       alert('Please enter a name');
       return;
     }
-    for (const playlist of this.state.playlists) {
+    for (const playlist of playlists) {
       if (playlist.title === this.state.newPlaylist) {
         alert('Please enter a unique and valid name');
         return;
@@ -61,15 +70,9 @@ class playlistScreen extends Component {
       tracks: [],
       createdOn: `${date} ${month}, ${year}`,
     };
-    this.setState(
-      {playlists: [newPlaylist, ...this.state.playlists]},
-      async () => {
-        await AsyncStorage.setItem(
-          'playlists',
-          JSON.stringify(this.state.playlists),
-        );
-      },
-    );
+    const newPlaylists = [newPlaylist, ...playlists];
+    await AsyncStorage.setItem('playlists', JSON.stringify(newPlaylists));
+    return newPlaylists;
   };
   addToThis = async i => {
     const playlists = this.state.playlists;
@@ -177,8 +180,19 @@ class playlistScreen extends Component {
                 paddingBottom: 0,
               }}
             />
-
-            <Button title="Create new" onPress={this.createNew} />
+            <PlaylistContext.Consumer>
+              {data => {
+                return (
+                  <Button
+                    title="Create new"
+                    onPress={async () => {
+                      const newPlaylists = await this.createNew(data.playlists);
+                      data.updatePlaylists(newPlaylists);
+                    }}
+                  />
+                );
+              }}
+            </PlaylistContext.Consumer>
             <View style={{marginBottom: 20}} />
 
             <View>
@@ -192,18 +206,64 @@ class playlistScreen extends Component {
                 Add to existing
               </Text>
             </View>
-            {playlistsToRender.length > 0 ? (
-              playlistsToRender
-            ) : (
-              <Text
-                style={{
-                  color: Colors.textPrimary,
-                  textAlign: 'center',
-                  marginTop: 30,
-                }}>
-                Such empty. Much vow
-              </Text>
-            )}
+            <PlaylistContext.Consumer>
+              {context => {
+                return context.playlists.length > 0 ? (
+                  context.playlists.map((playlist, i) => (
+                    <ListItem
+                      key={i}
+                      onPress={async () => {
+                        const newPlaylists = context.playlists;
+                        newPlaylists[i].tracks.push({
+                          href: this.props.navigation.getParam('href'),
+                          title: this.props.navigation.getParam('title'),
+                          artist: this.props.navigation.getParam('artist'),
+                          image: this.props.navigation.getParam('image'),
+                        });
+                        await AsyncStorage.setItem(
+                          'playlists',
+                          JSON.stringify(newPlaylists),
+                        );
+                        context.updatePlaylists(newPlaylists);
+                      }}
+                      title={playlist.title}
+                      titleStyle={{color: Colors.textPrimary}}
+                      subtitle={
+                        'Created on ' +
+                        playlist.createdOn +
+                        '\nNumber of tracks: ' +
+                        playlist.tracks.length
+                      }
+                      subtitleStyle={{color: Colors.textSecondary}}
+                      bottomDivider
+                      //   onPress={() => this.onClickPlay(res.href)}
+                      leftIcon={
+                        <IconMaterial
+                          name="playlist-play"
+                          size={20}
+                          style={{color: Colors.textPrimary}}
+                        />
+                      }
+                      containerStyle={{
+                        backgroundColor: Colors.backgroundPrimary,
+                      }}
+                      contentContainerStyle={{
+                        backgroundColor: Colors.backgroundPrimary,
+                      }}
+                    />
+                  ))
+                ) : (
+                  <Text
+                    style={{
+                      color: Colors.textPrimary,
+                      textAlign: 'center',
+                      marginTop: 30,
+                    }}>
+                    Such empty. Much vow
+                  </Text>
+                );
+              }}
+            </PlaylistContext.Consumer>
           </View>
         </View>
       </View>

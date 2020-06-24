@@ -8,6 +8,8 @@ import LibraryStack from './src/Library/LibraryStack';
 
 import colors from './src/Styles/Colors';
 import Colors from './src/Styles/Colors';
+import {PlaylistContext} from './src/DataStore/Playlist';
+import {AsyncStorage} from 'react-native';
 
 const MainTabNavigator = createBottomTabNavigator(
   {
@@ -41,4 +43,37 @@ const MainTabNavigator = createBottomTabNavigator(
   },
 );
 
-export default createAppContainer(MainTabNavigator);
+class Provider extends React.Component {
+  state = {
+    playlists: [{title: 'New', createdOn: 'Now', tracks: []}],
+  };
+  updatePlaylists = newPlaylists => {
+    this.setState({playlists: newPlaylists});
+  };
+  async componentDidMount() {
+    // const playlists = await AsyncStorage.getItem('playlists');
+    // this.setState({playlists});
+  }
+  render() {
+    return (
+      <PlaylistContext.Provider
+        value={{
+          playlists: this.state.playlists,
+          updatePlaylists: this.updatePlaylists,
+        }}>
+        {this.props.children}
+      </PlaylistContext.Provider>
+    );
+  }
+}
+
+const App = () => {
+  const Container = createAppContainer(MainTabNavigator);
+  return (
+    <Provider>
+      <Container />
+    </Provider>
+  );
+};
+
+export default App;

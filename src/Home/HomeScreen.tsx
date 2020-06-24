@@ -12,6 +12,7 @@ import {SearchBar} from 'react-native-elements';
 import Styles from '../Styles/Home';
 import {ScrollView} from 'react-native-gesture-handler';
 import Colors from '../Styles/Colors';
+import {PlaylistContext} from '../DataStore/Playlist';
 
 export default class HomeScreen extends React.Component {
   state = {

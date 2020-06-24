@@ -35,9 +35,6 @@ export default class PopupMenu extends React.Component {
       this.setState({downloadStatus: 2});
   }
 
-  addToPlaylist = () => {
-    console.log('adding to playlist');
-  };
   addToQueue = async () => {
     TrackPlayer.updateOptions({
       ratingType: TrackPlayer.RATING_5_STARS,

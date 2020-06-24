@@ -13,6 +13,7 @@ import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import Styles from '../Styles/Home';
 import Colors from '../Styles/Colors';
 import {ListItem} from 'react-native-elements';
+import {PlaylistContext} from '../DataStore/Playlist';
 
 export default class LibraryScreen extends React.Component {
   state = {
@@ -91,25 +92,58 @@ export default class LibraryScreen extends React.Component {
             </View>
             <View style={{marginTop: 10}}>
               <ScrollView>
-                {playlists.length > 0 ? (
-                  playlists
-                ) : (
-                  <View
-                    style={{
-                      justifyContent: 'center',
-                      width: Dimensions.get('window').width,
-                    }}>
-                    <Text
-                      adjustsFontSizeToFit={true}
-                      style={{
-                        color: Colors.textPrimary,
-                        textAlign: 'center',
-                        fontSize: 15,
-                      }}>
-                      You haven't created any playlists yet!
-                    </Text>
-                  </View>
-                )}
+                <PlaylistContext.Consumer>
+                  {playlists => {
+                    return playlists.playlists.length > 0 ? (
+                      playlists.playlists.map((playlist, i) => (
+                        <ListItem
+                          key={i}
+                          onPress={() => this.openPlaylist(i)}
+                          title={playlist.title}
+                          titleStyle={{color: Colors.textPrimary}}
+                          subtitle={
+                            'Created on ' +
+                            playlist.createdOn +
+                            '\nNumber of tracks: ' +
+                            playlist.tracks.length
+                          }
+                          subtitleStyle={{color: Colors.textSecondary}}
+                          bottomDivider
+                          //   onPress={() => this.onClickPlay(res.href)}
+                          leftIcon={
+                            <IconMaterial
+                              name="playlist-play"
+                              size={20}
+                              style={{color: Colors.textPrimary}}
+                            />
+                          }
+                          containerStyle={{
+                            backgroundColor: Colors.backgroundPrimary,
+                          }}
+                          contentContainerStyle={{
+                            backgroundColor: Colors.backgroundPrimary,
+                          }}
+                        />
+                      ))
+                    ) : (
+                      <View
+                        style={{
+                          justifyContent: 'center',
+                          width: Dimensions.get('window').width,
+                        }}>
+                        <Text
+                          adjustsFontSizeToFit={true}
+                          style={{
+                            color: Colors.textPrimary,
+                            textAlign: 'center',
+                            fontSize: 15,
+                          }}>
+                          You haven't created any playlists yet!
+                        </Text>
+                      </View>
+                    );
+                  }}
+                </PlaylistContext.Consumer>
               </ScrollView>
             </View>
           </View>

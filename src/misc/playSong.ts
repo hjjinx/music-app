@@ -26,9 +26,10 @@ export default async (href, updateRecentlyPlayed) => {
     console.log(info);
 
     // Add to recentlyPlayed songs
-    const recentlyPlayed = JSON.parse(
+    let recentlyPlayed = JSON.parse(
       await AsyncStorage.getItem('recentlyPlayed'),
     );
+    recentlyPlayed = recentlyPlayed ? recentlyPlayed : [];
     // If this song in already one of the last 10 played songs,
     for (let i = 0; i < recentlyPlayed.length; i++) {
       let currSong = recentlyPlayed[i];

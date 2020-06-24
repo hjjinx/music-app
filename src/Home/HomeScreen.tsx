@@ -20,47 +20,11 @@ export default class HomeScreen extends React.Component {
     recentlyPlayed: [],
   };
 
-  updateLikedSongs = async () => {
-    if (!(await AsyncStorage.getItem('liked_songs'))) {
-      await AsyncStorage.setItem('liked_songs', '[]');
-      this.setState({likedSongs: []});
-      return;
-    }
-
-    const likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
-    this.setState({likedSongs});
-  };
-
-  updateRecentlyPlayed = async () => {
-    if (!(await AsyncStorage.getItem('recentlyPlayed'))) {
-      await AsyncStorage.setItem('recentlyPlayed', '[]');
-      this.setState({recentlyPlayed: []});
-      return;
-    }
-
-    const recentlyPlayed = JSON.parse(
-      await AsyncStorage.getItem('recentlyPlayed'),
-    );
-    this.setState({recentlyPlayed});
-  };
-
   async componentDidMount() {
-    this.updateLikedSongs();
-    this.updateRecentlyPlayed();
     if (!(await AsyncStorage.getItem('playlists'))) {
       await AsyncStorage.setItem('playlists', '[]');
     }
   }
-  openMenuLikedSongs = (i: number) => {
-    const data = this.state.likedSongs[i];
-    this.props.navigation.navigate('Menu', data);
-  };
-
-  openMenuRecentlyPlayed = (i: number) => {
-    const data = this.state.recentlyPlayed[i];
-    this.props.navigation.navigate('Menu', data);
-  };
-
   openMenu = data => {
     this.props.navigation.navigate('Menu', data);
   };
@@ -137,28 +101,6 @@ export default class HomeScreen extends React.Component {
       </MainContext.Consumer>
     );
 
-    // let likedSongsToRender = this.state.likedSongs.map((elem, i) => (
-    //   <MainContext.Consumer>
-    //     {
-    //       context => {
-    //         const likedSongs = context.liked;
-    //         likedSongs.map((elem, i) => )
-    //       }
-    //     }
-
-    // ));
-
-    // let recentlyPlayedToRender = this.state.recentlyPlayed.map((elem, i) => (
-    //   <TouchableHighlight
-    //     onPress={() => this.openMenuRecentlyPlayed(i)}
-    //     key={i}>
-    //     <View style={Styles.track}>
-    //       <Image style={Styles.image} source={{uri: elem.image}} />
-    //       <Text style={Styles.trackName}>{elem.title.substr(0, 30)}</Text>
-    //     </View>
-    //   </TouchableHighlight>
-    // ));
-
     return (
       <View style={{flex: 1}}>
         <View style={{flexDirection: 'row'}}>
@@ -204,12 +146,7 @@ export default class HomeScreen extends React.Component {
               onPress={() => this.props.navigation.navigate('Search')}> */}
             <SearchBar
               placeholder="Search for..."
-              onFocus={() =>
-                this.props.navigation.navigate('Search', {
-                  updateLikedSongs: this.updateLikedSongs,
-                  updateRecentlyPlayed: this.updateRecentlyPlayed,
-                })
-              }
+              onFocus={() => this.props.navigation.navigate('Search')}
               inputStyle={{
                 padding: 0,
                 margin: 0,

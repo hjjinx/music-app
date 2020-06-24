@@ -23,6 +23,7 @@ export default class PlaylistScreen extends React.Component {
     tracks: [],
   };
   componentDidMount() {
+    console.log(this.props.navigation.getParam('playlists'));
     this.setState({...this.props.navigation.getParam('playlists')});
   }
   onClickPlay = async href => {

@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  Keyboard,
-  PermissionsAndroid,
-  BackHandler,
-} from 'react-native';
+import {View, Text, Keyboard, PermissionsAndroid} from 'react-native';
 import React from 'react';
 import {SearchBar} from 'react-native-elements';
 import {ListItem} from 'react-native-elements';
@@ -15,6 +9,7 @@ import Colors from '../Styles/Colors';
 import {search} from '../misc/youtubeSearch';
 import styles from '../Styles/Home';
 import playSong from '../misc/playSong';
+import {MainContext} from '../DataStore/Main';
 
 export default class SearchScreen extends React.Component {
   static navigationOptions = {
@@ -32,25 +27,6 @@ export default class SearchScreen extends React.Component {
   };
   searchTimeout;
   searchInput: SearchBar;
-  backHandler;
-
-  backAction = () => {
-    console.log('called');
-    if (!this.props.navigation.getParam('updateLikedSongs')) return false;
-    this.props.navigation
-      .getParam('updateLikedSongs')()
-      .then(res => {
-        this.props.navigation
-          .getParam('updateRecentlyPlayed')()
-          .then(res => {
-            return false;
-          });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-    return false;
-  };
 
   async componentDidMount() {
     if (
@@ -63,15 +39,6 @@ export default class SearchScreen extends React.Component {
     )
       await requestFilePermission();
     this.searchInput.focus();
-
-    this.backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.backAction,
-    );
-  }
-
-  async componentWillUnmount() {
-    this.backHandler.remove();
   }
 
   onSearchChange = value => {
@@ -91,9 +58,9 @@ export default class SearchScreen extends React.Component {
     });
   };
 
-  onClickPlay = async href => {
+  onClickPlay = async (href, updateRecentlyPlayed) => {
     try {
-      await playSong(href);
+      await playSong(href, updateRecentlyPlayed);
     } catch (err) {
       console.log('Error in playing song');
       console.log(err);
@@ -104,47 +71,55 @@ export default class SearchScreen extends React.Component {
   render() {
     let listOfItems;
     if (this.state.results.length > 0)
-      listOfItems = this.state.results.map((res, i) => (
-        <ListItem
-          key={i}
-          title={res.title}
-          titleStyle={{color: Colors.textPrimary}}
-          subtitle={res.artist}
-          subtitleStyle={{color: Colors.textSecondary}}
-          bottomDivider
-          onPress={() => this.onClickPlay(res.href)}
-          leftAvatar={{source: {uri: res.img}}}
-          rightElement={
-            <Icon
-              name="md-more"
-              style={{
-                paddingLeft: 30,
-                paddingVertical: 10,
-                color: 'grey',
-                marginRight: 0,
-                paddingRight: 7,
-              }}
-              size={20}
-              color={Colors.textPrimary}
-              onPress={() =>
-                this.props.navigation.navigate('Menu', {
-                  image: res.img,
-                  title: res.title,
-                  artist: res.artist,
-                  href: res.href,
-                })
-              }
-            />
-          }
-          containerStyle={{
-            backgroundColor: Colors.backgroundPrimary,
+      listOfItems = (
+        <MainContext.Consumer>
+          {context => {
+            return this.state.results.map((res, i) => (
+              <ListItem
+                key={i}
+                title={res.title}
+                titleStyle={{color: Colors.textPrimary}}
+                subtitle={res.artist}
+                subtitleStyle={{color: Colors.textSecondary}}
+                bottomDivider
+                onPress={() =>
+                  this.onClickPlay(res.href, context.updateRecentlyPlayed)
+                }
+                leftAvatar={{source: {uri: res.img}}}
+                rightElement={
+                  <Icon
+                    name="md-more"
+                    style={{
+                      paddingLeft: 30,
+                      paddingVertical: 10,
+                      color: 'grey',
+                      marginRight: 0,
+                      paddingRight: 7,
+                    }}
+                    size={20}
+                    color={Colors.textPrimary}
+                    onPress={() =>
+                      this.props.navigation.navigate('Menu', {
+                        image: res.img,
+                        title: res.title,
+                        artist: res.artist,
+                        href: res.href,
+                      })
+                    }
+                  />
+                }
+                containerStyle={{
+                  backgroundColor: Colors.backgroundPrimary,
+                }}
+                contentContainerStyle={{
+                  backgroundColor: Colors.backgroundPrimary,
+                  // color: 'white',
+                }}
+              />
+            ));
           }}
-          contentContainerStyle={{
-            backgroundColor: Colors.backgroundPrimary,
-            // color: 'white',
-          }}
-        />
-      ));
+        </MainContext.Consumer>
+      );
     else if (!this.state.searching)
       listOfItems = (
         <View style={[styles.container, {paddingTop: 100}]}>

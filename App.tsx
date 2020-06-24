@@ -8,7 +8,7 @@ import LibraryStack from './src/Library/LibraryStack';
 
 import colors from './src/Styles/Colors';
 import Colors from './src/Styles/Colors';
-import {PlaylistContext} from './src/DataStore/Playlist';
+import {MainContext} from './src/DataStore/Main';
 import {AsyncStorage} from 'react-native';
 
 const MainTabNavigator = createBottomTabNavigator(
@@ -46,23 +46,46 @@ const MainTabNavigator = createBottomTabNavigator(
 class Provider extends React.Component {
   state = {
     playlists: [{title: 'New', createdOn: 'Now', tracks: []}],
+    liked: [],
+    recentlyPlayed: [],
   };
-  updatePlaylists = newPlaylists => {
-    this.setState({playlists: newPlaylists});
-  };
+  updatePlaylists = newPlaylists => this.setState({playlists: newPlaylists});
+  updateLiked = newLiked => this.setState({liked: newLiked});
+  updateRecentlyPlayed = newPlayed =>
+    this.setState({recentlyPlayed: newPlayed});
+
   async componentDidMount() {
-    // const playlists = await AsyncStorage.getItem('playlists');
-    // this.setState({playlists});
+    const playlists = JSON.parse(await AsyncStorage.getItem('playlists'))
+      ? JSON.parse(await AsyncStorage.getItem('playlists'))
+      : [];
+    const liked = JSON.parse(await AsyncStorage.getItem('liked_songs'))
+      ? JSON.parse(await AsyncStorage.getItem('liked_songs'))
+      : [];
+    const recentlyPlayed = JSON.parse(
+      await AsyncStorage.getItem('recentlyPlayed'),
+    )
+      ? JSON.parse(await AsyncStorage.getItem('recentlyPlayed'))
+      : [];
+
+    this.setState({
+      playlists,
+      liked,
+      recentlyPlayed,
+    });
   }
   render() {
     return (
-      <PlaylistContext.Provider
+      <MainContext.Provider
         value={{
           playlists: this.state.playlists,
+          liked: this.state.liked,
+          recentlyPlayed: this.state.recentlyPlayed,
           updatePlaylists: this.updatePlaylists,
+          updateLiked: this.updateLiked,
+          updateRecentlyPlayed: this.updateRecentlyPlayed,
         }}>
         {this.props.children}
-      </PlaylistContext.Provider>
+      </MainContext.Provider>
     );
   }
 }

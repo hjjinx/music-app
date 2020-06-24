@@ -12,7 +12,7 @@ import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/Entypo';
 
 import Colors from '../Styles/Colors';
-import {PlaylistContext} from '../DataStore/Playlist';
+import {MainContext} from '../DataStore/Main';
 
 const monthMap = [
   'January',
@@ -180,7 +180,7 @@ class playlistScreen extends Component {
                 paddingBottom: 0,
               }}
             />
-            <PlaylistContext.Consumer>
+            <MainContext.Consumer>
               {data => {
                 return (
                   <Button
@@ -192,7 +192,7 @@ class playlistScreen extends Component {
                   />
                 );
               }}
-            </PlaylistContext.Consumer>
+            </MainContext.Consumer>
             <View style={{marginBottom: 20}} />
 
             <View>
@@ -206,7 +206,7 @@ class playlistScreen extends Component {
                 Add to existing
               </Text>
             </View>
-            <PlaylistContext.Consumer>
+            <MainContext.Consumer>
               {context => {
                 return context.playlists.length > 0 ? (
                   context.playlists.map((playlist, i) => (
@@ -263,7 +263,7 @@ class playlistScreen extends Component {
                   </Text>
                 );
               }}
-            </PlaylistContext.Consumer>
+            </MainContext.Consumer>
           </View>
         </View>
       </View>

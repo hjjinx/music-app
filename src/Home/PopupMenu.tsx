@@ -17,6 +17,7 @@ import searchStyles from '../Styles/Search';
 import Colors from '../Styles/Colors';
 import {getBestFormat} from '../misc/ytdl-wrapper';
 import playSong from '../misc/playSong';
+import {MainContext} from '../DataStore/Main';
 
 export default class PopupMenu extends React.Component {
   static navigationOptions = {
@@ -55,8 +56,6 @@ export default class PopupMenu extends React.Component {
     let state = await TrackPlayer.getState();
     let trackId = await TrackPlayer.getCurrentTrack();
     let trackObject = await TrackPlayer.getTrack(trackId);
-    console.log(state);
-    console.log(trackObject);
     const {bestFormat, info} = await getBestFormat(
       this.props.navigation.getParam('href'),
     );
@@ -68,27 +67,25 @@ export default class PopupMenu extends React.Component {
       artwork: this.props.navigation.getParam('image'),
     });
     TrackPlayer.play();
-    console.log('adding to queue.');
   };
 
-  like = async () => {
+  like = async likedSongs => {
     try {
       /*
       likedSong obejct: {title: string, href: string, image: string, artist: string}
       */
-      let likedSongs = JSON.parse(await AsyncStorage.getItem('liked_songs'));
-      // Unike song if already liked
+      // Unlike song if already liked
+
       for (let i = 0; i < likedSongs.length; i++) {
         const song = likedSongs[i];
         if (song.href === this.props.navigation.getParam('href')) {
           likedSongs.splice(i, 1);
           this.setState({liked: false});
           await AsyncStorage.setItem('liked_songs', JSON.stringify(likedSongs));
-          return;
+          return likedSongs;
         }
       }
       // Like song if not already liked
-
       likedSongs.unshift({
         href: this.props.navigation.getParam('href'),
         title: this.props.navigation.getParam('title'),
@@ -98,6 +95,7 @@ export default class PopupMenu extends React.Component {
       this.setState({liked: true});
 
       await AsyncStorage.setItem('liked_songs', JSON.stringify(likedSongs));
+      return likedSongs;
     } catch (err) {
       console.log('Error in liking song..');
       console.log(err);
@@ -186,9 +184,12 @@ export default class PopupMenu extends React.Component {
       });
   };
 
-  onClickPlay = async () => {
+  onClickPlay = async updateRecentlyPlayed => {
     try {
-      await playSong(this.props.navigation.getParam('href'));
+      await playSong(
+        this.props.navigation.getParam('href'),
+        updateRecentlyPlayed,
+      );
     } catch (err) {
       console.log('Error in playing song');
       console.log(err);
@@ -226,153 +227,171 @@ export default class PopupMenu extends React.Component {
               {this.props.navigation.getParam('artist')}
             </Text>
           </View>
-          <TouchableHighlight
-            onPress={() =>
-              this.props.navigation.navigate('Playlist', {
-                href: this.props.navigation.getParam('href'),
-                title: this.props.navigation.getParam('title'),
-                artist: this.props.navigation.getParam('artist'),
-                image: this.props.navigation.getParam('image'),
-              })
-            }>
-            <View style={searchStyles.option}>
-              <View style={{flex: 1, alignItems: 'flex-end'}}>
-                <Icon
-                  name="playlist-add"
-                  style={{
-                    color: 'grey',
-                    marginRight: 10,
-                  }}
-                  size={20}
-                  color={Colors.textPrimary}
-                />
-              </View>
-              <View style={{flex: 1}}>
-                <Text
-                  style={{
-                    color: Colors.textPrimary,
-                    textAlign: 'center',
-                    fontSize: 17,
-                  }}>
-                  Add to Playlist
-                </Text>
-              </View>
-              <View style={{flex: 1}} />
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight onPress={this.addToQueue}>
-            <View style={[searchStyles.option]}>
-              <View style={{flex: 1, alignItems: 'flex-end'}}>
-                <Icon
-                  name="queue"
-                  style={{
-                    color: 'grey',
-                    marginRight: 10,
-                  }}
-                  size={20}
-                  color={Colors.textPrimary}
-                />
-              </View>
-              <View style={{flex: 1}}>
-                <Text
-                  style={{
-                    color: Colors.textPrimary,
-                    textAlign: 'center',
-                    fontSize: 17,
-                  }}>
-                  Add to Queue
-                </Text>
-              </View>
-              <View style={{flex: 1}} />
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight onPress={this.like}>
-            <View style={[searchStyles.option]}>
-              <View style={{flex: 1, alignItems: 'flex-end'}}>
-                <AntIcon
-                  name={this.state.liked ? 'heart' : 'hearto'}
-                  style={{
-                    color: this.state.liked ? 'white' : 'grey',
-                    marginRight: 10,
-                  }}
-                  size={20}
-                  color={Colors.textPrimary}
-                />
-              </View>
-              <View style={{flex: 1}}>
-                <Text
-                  style={{
-                    color: Colors.textPrimary,
-                    textAlign: 'center',
-                    fontSize: 17,
-                  }}>
-                  Like{this.state.liked ? 'd' : ''}
-                </Text>
-              </View>
-              <View style={{flex: 1}} />
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight onPress={this.onClickDownload}>
-            <View style={searchStyles.option}>
-              <View style={{flex: 1, alignItems: 'flex-end'}}>
-                <Icon
-                  name={
-                    this.state.downloadStatus === 2
-                      ? 'cloud-done'
-                      : 'cloud-download'
-                  }
-                  style={{
-                    color: this.state.downloadStatus === 0 ? 'grey' : 'white',
-                    marginRight: 10,
-                  }}
-                  size={20}
-                  color={Colors.textPrimary}
-                />
-              </View>
-              <View style={{flex: 1}}>
-                <Text
-                  style={{
-                    color: Colors.textPrimary,
-                    textAlign: 'center',
-                    fontSize: 17,
-                  }}>
-                  Download
-                  {this.state.downloadStatus === 2
-                    ? 'ed'
-                    : this.state.downloadStatus === 0
-                    ? ''
-                    : 'ing'}
-                </Text>
-              </View>
-              <View style={{flex: 1}} />
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight onPress={this.onClickPlay}>
-            <View style={searchStyles.option}>
-              <View style={{flex: 1, alignItems: 'flex-end'}}>
-                <Icon
-                  name={'play-arrow'}
-                  style={{
-                    color: 'grey',
-                    marginRight: 10,
-                  }}
-                  size={20}
-                  color={Colors.textPrimary}
-                />
-              </View>
-              <View style={{flex: 1}}>
-                <Text
-                  style={{
-                    color: Colors.textPrimary,
-                    textAlign: 'center',
-                    fontSize: 17,
-                  }}>
-                  Play
-                </Text>
-              </View>
-              <View style={{flex: 1}} />
-            </View>
-          </TouchableHighlight>
+          <MainContext.Consumer>
+            {context => {
+              return (
+                <React.Fragment>
+                  <TouchableHighlight
+                    onPress={() =>
+                      this.props.navigation.navigate('Playlist', {
+                        href: this.props.navigation.getParam('href'),
+                        title: this.props.navigation.getParam('title'),
+                        artist: this.props.navigation.getParam('artist'),
+                        image: this.props.navigation.getParam('image'),
+                      })
+                    }>
+                    <View style={searchStyles.option}>
+                      <View style={{flex: 1, alignItems: 'flex-end'}}>
+                        <Icon
+                          name="playlist-add"
+                          style={{
+                            color: 'grey',
+                            marginRight: 10,
+                          }}
+                          size={20}
+                          color={Colors.textPrimary}
+                        />
+                      </View>
+                      <View style={{flex: 1}}>
+                        <Text
+                          style={{
+                            color: Colors.textPrimary,
+                            textAlign: 'center',
+                            fontSize: 17,
+                          }}>
+                          Add to Playlist
+                        </Text>
+                      </View>
+                      <View style={{flex: 1}} />
+                    </View>
+                  </TouchableHighlight>
+                  <TouchableHighlight onPress={this.addToQueue}>
+                    <View style={[searchStyles.option]}>
+                      <View style={{flex: 1, alignItems: 'flex-end'}}>
+                        <Icon
+                          name="queue"
+                          style={{
+                            color: 'grey',
+                            marginRight: 10,
+                          }}
+                          size={20}
+                          color={Colors.textPrimary}
+                        />
+                      </View>
+                      <View style={{flex: 1}}>
+                        <Text
+                          style={{
+                            color: Colors.textPrimary,
+                            textAlign: 'center',
+                            fontSize: 17,
+                          }}>
+                          Add to Queue
+                        </Text>
+                      </View>
+                      <View style={{flex: 1}} />
+                    </View>
+                  </TouchableHighlight>
+                  <TouchableHighlight
+                    onPress={async () => {
+                      const likedSongs = await this.like(context.liked);
+                      context.updateLiked(likedSongs);
+                    }}>
+                    <View style={[searchStyles.option]}>
+                      <View style={{flex: 1, alignItems: 'flex-end'}}>
+                        <AntIcon
+                          name={this.state.liked ? 'heart' : 'hearto'}
+                          style={{
+                            color: this.state.liked ? 'white' : 'grey',
+                            marginRight: 10,
+                          }}
+                          size={20}
+                          color={Colors.textPrimary}
+                        />
+                      </View>
+                      <View style={{flex: 1}}>
+                        <Text
+                          style={{
+                            color: Colors.textPrimary,
+                            textAlign: 'center',
+                            fontSize: 17,
+                          }}>
+                          Like{this.state.liked ? 'd' : ''}
+                        </Text>
+                      </View>
+                      <View style={{flex: 1}} />
+                    </View>
+                  </TouchableHighlight>
+                  <TouchableHighlight onPress={this.onClickDownload}>
+                    <View style={searchStyles.option}>
+                      <View style={{flex: 1, alignItems: 'flex-end'}}>
+                        <Icon
+                          name={
+                            this.state.downloadStatus === 2
+                              ? 'cloud-done'
+                              : 'cloud-download'
+                          }
+                          style={{
+                            color:
+                              this.state.downloadStatus === 0
+                                ? 'grey'
+                                : 'white',
+                            marginRight: 10,
+                          }}
+                          size={20}
+                          color={Colors.textPrimary}
+                        />
+                      </View>
+                      <View style={{flex: 1}}>
+                        <Text
+                          style={{
+                            color: Colors.textPrimary,
+                            textAlign: 'center',
+                            fontSize: 17,
+                          }}>
+                          Download
+                          {this.state.downloadStatus === 2
+                            ? 'ed'
+                            : this.state.downloadStatus === 0
+                            ? ''
+                            : 'ing'}
+                        </Text>
+                      </View>
+                      <View style={{flex: 1}} />
+                    </View>
+                  </TouchableHighlight>
+                  <TouchableHighlight
+                    onPress={() => {
+                      this.onClickPlay(context.updateRecentlyPlayed);
+                    }}>
+                    <View style={searchStyles.option}>
+                      <View style={{flex: 1, alignItems: 'flex-end'}}>
+                        <Icon
+                          name={'play-arrow'}
+                          style={{
+                            color: 'grey',
+                            marginRight: 10,
+                          }}
+                          size={20}
+                          color={Colors.textPrimary}
+                        />
+                      </View>
+                      <View style={{flex: 1}}>
+                        <Text
+                          style={{
+                            color: Colors.textPrimary,
+                            textAlign: 'center',
+                            fontSize: 17,
+                          }}>
+                          Play
+                        </Text>
+                      </View>
+                      <View style={{flex: 1}} />
+                    </View>
+                  </TouchableHighlight>
+                </React.Fragment>
+              );
+            }}
+          </MainContext.Consumer>
         </View>
       </TouchableHighlight>
     );

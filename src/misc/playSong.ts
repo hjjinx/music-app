@@ -2,7 +2,7 @@ import TrackPlayer from 'react-native-track-player';
 import {getBestFormat} from './ytdl-wrapper';
 import {AsyncStorage} from 'react-native';
 
-export default async href => {
+export default async (href, updateRecentlyPlayed) => {
   try {
     await TrackPlayer.setupPlayer();
     TrackPlayer.updateOptions({
@@ -41,6 +41,7 @@ export default async href => {
       image: info.player_response.videoDetails.thumbnail.thumbnails[2].url,
     });
     if (recentlyPlayed.length > 10) recentlyPlayed.pop();
+    updateRecentlyPlayed(recentlyPlayed);
     await AsyncStorage.setItem(
       'recentlyPlayed',
       JSON.stringify(recentlyPlayed),

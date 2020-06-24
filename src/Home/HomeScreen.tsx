@@ -12,7 +12,7 @@ import {SearchBar} from 'react-native-elements';
 import Styles from '../Styles/Home';
 import {ScrollView} from 'react-native-gesture-handler';
 import Colors from '../Styles/Colors';
-import {PlaylistContext} from '../DataStore/Playlist';
+import {MainContext} from '../DataStore/Main';
 
 export default class HomeScreen extends React.Component {
   state = {
@@ -61,26 +61,103 @@ export default class HomeScreen extends React.Component {
     this.props.navigation.navigate('Menu', data);
   };
 
-  render() {
-    let likedSongsToRender = this.state.likedSongs.map((elem, i) => (
-      <TouchableHighlight onPress={() => this.openMenuLikedSongs(i)} key={i}>
-        <View style={Styles.track}>
-          <Image style={Styles.image} source={{uri: elem.image}} />
-          <Text style={Styles.trackName}>{elem.title.substr(0, 30)}</Text>
-        </View>
-      </TouchableHighlight>
-    ));
+  openMenu = data => {
+    this.props.navigation.navigate('Menu', data);
+  };
 
-    let recentlyPlayedToRender = this.state.recentlyPlayed.map((elem, i) => (
-      <TouchableHighlight
-        onPress={() => this.openMenuRecentlyPlayed(i)}
-        key={i}>
-        <View style={Styles.track}>
-          <Image style={Styles.image} source={{uri: elem.image}} />
-          <Text style={Styles.trackName}>{elem.title.substr(0, 30)}</Text>
-        </View>
-      </TouchableHighlight>
-    ));
+  render() {
+    let likedSongsToRender = (
+      <MainContext.Consumer>
+        {context => {
+          return context.liked.length > 0 ? (
+            context.liked.map((elem, i) => (
+              <TouchableHighlight onPress={() => this.openMenu(elem)} key={i}>
+                <View style={Styles.track}>
+                  <Image style={Styles.image} source={{uri: elem.image}} />
+                  <Text style={Styles.trackName}>
+                    {elem.title.substr(0, 30)}
+                  </Text>
+                </View>
+              </TouchableHighlight>
+            ))
+          ) : (
+            <View
+              style={{
+                justifyContent: 'center',
+                width: Dimensions.get('window').width,
+              }}>
+              <Text
+                adjustsFontSizeToFit={true}
+                style={{
+                  color: Colors.textPrimary,
+                  textAlign: 'center',
+                  fontSize: 15,
+                }}>
+                You haven't liked any songs yet!
+              </Text>
+            </View>
+          );
+        }}
+      </MainContext.Consumer>
+    );
+
+    let recentlyPlayedToRender = (
+      <MainContext.Consumer>
+        {context => {
+          console.log(context.recentlyPlayed);
+          return context.recentlyPlayed.length > 0 ? (
+            context.recentlyPlayed.map((elem, i) => (
+              <TouchableHighlight onPress={() => this.openMenu(elem)} key={i}>
+                <View style={Styles.track}>
+                  <Image style={Styles.image} source={{uri: elem.image}} />
+                  <Text style={Styles.trackName}>
+                    {elem.title.substr(0, 30)}
+                  </Text>
+                </View>
+              </TouchableHighlight>
+            ))
+          ) : (
+            <View
+              style={{
+                justifyContent: 'center',
+                width: Dimensions.get('window').width,
+              }}>
+              <Text
+                adjustsFontSizeToFit={true}
+                style={{
+                  color: Colors.textPrimary,
+                  textAlign: 'center',
+                  fontSize: 15,
+                }}>
+                You haven't played any songs yet!
+              </Text>
+            </View>
+          );
+        }}
+      </MainContext.Consumer>
+    );
+
+    // let likedSongsToRender = this.state.likedSongs.map((elem, i) => (
+    //   <MainContext.Consumer>
+    //     {
+    //       context => {
+    //         const likedSongs = context.liked;
+    //         likedSongs.map((elem, i) => )
+    //       }
+    //     }
+
+    // ));
+
+    // let recentlyPlayedToRender = this.state.recentlyPlayed.map((elem, i) => (
+    //   <TouchableHighlight
+    //     onPress={() => this.openMenuRecentlyPlayed(i)}
+    //     key={i}>
+    //     <View style={Styles.track}>
+    //       <Image style={Styles.image} source={{uri: elem.image}} />
+    //       <Text style={Styles.trackName}>{elem.title.substr(0, 30)}</Text>
+    //     </View>
+    //   </TouchableHighlight>
+    // ));
 
     return (
       <View style={{flex: 1}}>
@@ -167,27 +244,7 @@ export default class HomeScreen extends React.Component {
                 <Text style={Styles.headingText}>Liked Songs</Text>
               </View>
               <View style={Styles.musicList}>
-                <ScrollView horizontal={true}>
-                  {likedSongsToRender.length > 0 ? (
-                    likedSongsToRender
-                  ) : (
-                    <View
-                      style={{
-                        justifyContent: 'center',
-                        width: Dimensions.get('window').width,
-                      }}>
-                      <Text
-                        adjustsFontSizeToFit={true}
-                        style={{
-                          color: Colors.textPrimary,
-                          textAlign: 'center',
-                          fontSize: 15,
-                        }}>
-                        You haven't liked any songs yet!
-                      </Text>
-                    </View>
-                  )}
-                </ScrollView>
+                <ScrollView horizontal={true}>{likedSongsToRender}</ScrollView>
               </View>
             </View>
           </View>
@@ -202,25 +259,7 @@ export default class HomeScreen extends React.Component {
               </View>
               <View style={Styles.musicList}>
                 <ScrollView horizontal={true}>
-                  {recentlyPlayedToRender.length > 0 ? (
-                    recentlyPlayedToRender
-                  ) : (
-                    <View
-                      style={{
-                        justifyContent: 'center',
-                        width: Dimensions.get('window').width,
-                      }}>
-                      <Text
-                        adjustsFontSizeToFit={true}
-                        style={{
-                          color: Colors.textPrimary,
-                          textAlign: 'center',
-                          fontSize: 15,
-                        }}>
-                        You haven't played any songs yet!
-                      </Text>
-                    </View>
-                  )}
+                  {recentlyPlayedToRender}
                 </ScrollView>
               </View>
             </View>

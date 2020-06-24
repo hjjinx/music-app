@@ -7,18 +7,14 @@ import {
   AsyncStorage,
   Dimensions,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Entypo';
 import IconMaterial from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Styles from '../Styles/Home';
 import Colors from '../Styles/Colors';
 import {ListItem} from 'react-native-elements';
-import {PlaylistContext} from '../DataStore/Playlist';
+import {MainContext} from '../DataStore/Main';
 
 export default class LibraryScreen extends React.Component {
-  state = {
-    playlists: [],
-  };
   async componentDidMount() {
     const playlists = JSON.parse(await AsyncStorage.getItem('playlists'));
     console.log(playlists);
@@ -30,37 +26,6 @@ export default class LibraryScreen extends React.Component {
     });
   };
   render() {
-    console.log(this.state.playlists);
-    const playlists = this.state.playlists.map((playlist, i) => (
-      <ListItem
-        key={i}
-        onPress={() => this.openPlaylist(i)}
-        title={playlist.title}
-        titleStyle={{color: Colors.textPrimary}}
-        subtitle={
-          'Created on ' +
-          playlist.createdOn +
-          '\nNumber of tracks: ' +
-          playlist.tracks.length
-        }
-        subtitleStyle={{color: Colors.textSecondary}}
-        bottomDivider
-        //   onPress={() => this.onClickPlay(res.href)}
-        leftIcon={
-          <IconMaterial
-            name="playlist-play"
-            size={20}
-            style={{color: Colors.textPrimary}}
-          />
-        }
-        containerStyle={{
-          backgroundColor: Colors.backgroundPrimary,
-        }}
-        contentContainerStyle={{
-          backgroundColor: Colors.backgroundPrimary,
-        }}
-      />
-    ));
     return (
       <View style={[Styles.container, {flex: 1}]}>
         <View style={{height: 70, backgroundColor: Colors.backgroundSecondary}}>
@@ -92,13 +57,17 @@ export default class LibraryScreen extends React.Component {
             </View>
             <View style={{marginTop: 10}}>
               <ScrollView>
-                <PlaylistContext.Consumer>
+                <MainContext.Consumer>
                   {playlists => {
                     return playlists.playlists.length > 0 ? (
                       playlists.playlists.map((playlist, i) => (
                         <ListItem
                           key={i}
-                          onPress={() => this.openPlaylist(i)}
+                          onPress={() => {
+                            this.props.navigation.navigate('Playlist', {
+                              playlists: playlist,
+                            });
+                          }}
                           title={playlist.title}
                           titleStyle={{color: Colors.textPrimary}}
                           subtitle={
@@ -143,7 +112,7 @@ export default class LibraryScreen extends React.Component {
                       </View>
                     );
                   }}
-                </PlaylistContext.Consumer>
+                </MainContext.Consumer>
               </ScrollView>
             </View>
           </View>

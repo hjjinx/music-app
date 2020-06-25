@@ -86,6 +86,20 @@ export default class LibraryScreen extends React.Component {
                               style={{color: Colors.textPrimary}}
                             />
                           }
+                          rightIcon={
+                            <IconMaterial
+                              name="menu-up"
+                              size={30}
+                              style={{color: Colors.textPrimary}}
+                              onPress={() => {
+                                this.props.navigation.navigate('PlaylistMenu', {
+                                  title: playlist.title,
+                                  createdOn: playlist.createdOn,
+                                  tracks: playlist.tracks,
+                                });
+                              }}
+                            />
+                          }
                           containerStyle={{
                             backgroundColor: Colors.backgroundPrimary,
                           }}

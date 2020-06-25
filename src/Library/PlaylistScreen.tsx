@@ -15,6 +15,7 @@ import Colors from '../Styles/Colors';
 import {ListItem} from 'react-native-elements';
 import playSong from '../misc/playSong';
 import {getBestFormat} from '../misc/ytdl-wrapper';
+import {MainContext} from '../DataStore/Main';
 
 export default class PlaylistScreen extends React.Component {
   state = {
@@ -26,18 +27,18 @@ export default class PlaylistScreen extends React.Component {
     console.log(this.props.navigation.getParam('playlists'));
     this.setState({...this.props.navigation.getParam('playlists')});
   }
-  onClickPlay = async href => {
+  onClickPlay = async (href, updateRecentlyPlayed) => {
     try {
-      await playSong(href);
+      await playSong(href, updateRecentlyPlayed);
     } catch (err) {
       console.log('Error in playing song');
       console.log(err);
       alert('There was an error! Please try again');
     }
   };
-  startPlaylist = async () => {
+  startPlaylist = async updateRecentlyPlayed => {
     try {
-      await playSong(this.state.tracks[0].href);
+      await playSong(this.state.tracks[0].href, updateRecentlyPlayed);
     } catch (err) {
       console.log('Error in playing song');
       console.log(err);
@@ -58,47 +59,57 @@ export default class PlaylistScreen extends React.Component {
   };
   render() {
     console.log(this.state);
-    const tracksToRender = this.state.tracks.map((track, i) => (
-      <ListItem
-        key={i}
-        title={track.title}
-        titleStyle={{color: Colors.textPrimary}}
-        subtitle={track.artist}
-        subtitleStyle={{color: Colors.textSecondary}}
-        bottomDivider
-        onPress={() => this.onClickPlay(track.href)}
-        leftAvatar={{source: {uri: track.image}}}
-        // rightElement={
-        //   <Icon
-        //     name="md-more"
-        //     style={{
-        //       paddingLeft: 30,
-        //       paddingVertical: 10,
-        //       color: 'grey',
-        //       marginRight: 0,
-        //       paddingRight: 7,
-        //     }}
-        //     size={20}
-        //     color={Colors.textPrimary}
-        //     onPress={() =>
-        //       this.props.navigation.navigate('Menu', {
-        //         image: res.img,
-        //         title: res.title,
-        //         artist: res.artist,
-        //         href: res.href,
-        //       })
-        //     }
-        //   />
-        // }
-        containerStyle={{
-          backgroundColor: Colors.backgroundPrimary,
+
+    let tracksToRender = (
+      <MainContext.Consumer>
+        {context => {
+          return this.state.tracks.map((track, i) => (
+            <ListItem
+              key={i}
+              title={track.title}
+              titleStyle={{color: Colors.textPrimary}}
+              subtitle={track.artist}
+              subtitleStyle={{color: Colors.textSecondary}}
+              bottomDivider
+              onPress={() =>
+                this.onClickPlay(track.href, context.updateRecentlyPlayed)
+              }
+              leftAvatar={{source: {uri: track.image}}}
+              // rightElement={
+              //   <Icon
+              //     name="md-more"
+              //     style={{
+              //       paddingLeft: 30,
+              //       paddingVertical: 10,
+              //       color: 'grey',
+              //       marginRight: 0,
+              //       paddingRight: 7,
+              //     }}
+              //     size={20}
+              //     color={Colors.textPrimary}
+              //     onPress={() =>
+              //       this.props.navigation.navigate('Menu', {
+              //         image: res.img,
+              //         title: res.title,
+              //         artist: res.artist,
+              //         href: res.href,
+              //       })
+              //     }
+              //   />
+              // }
+              containerStyle={{
+                backgroundColor: Colors.backgroundPrimary,
+              }}
+              contentContainerStyle={{
+                backgroundColor: Colors.backgroundPrimary,
+                // color: 'white',
+              }}
+            />
+          ));
         }}
-        contentContainerStyle={{
-          backgroundColor: Colors.backgroundPrimary,
-          // color: 'white',
-        }}
-      />
-    ));
+      </MainContext.Consumer>
+    );
+
     return (
       <View style={[Styles.container, {flex: 1}]}>
         <View style={{height: 70, backgroundColor: Colors.backgroundSecondary}}>
@@ -123,16 +134,22 @@ export default class PlaylistScreen extends React.Component {
             height: Dimensions.get('window').height,
           }}>
           <View style={{flex: 1, marginTop: 30, justifyContent: 'flex-start'}}>
-            <IconMaterial
-              name="play"
-              style={{
-                color: Colors.textPrimary,
-                textAlign: 'center',
-                marginBottom: 10,
-              }}
-              size={40}
-              onPress={this.startPlaylist}
-            />
+            <MainContext.Consumer>
+              {context => (
+                <IconMaterial
+                  name="play"
+                  style={{
+                    color: Colors.textPrimary,
+                    textAlign: 'center',
+                    marginBottom: 10,
+                  }}
+                  size={40}
+                  onPress={() =>
+                    this.startPlaylist(context.updateRecentlyPlayed)
+                  }
+                />
+              )}
+            </MainContext.Consumer>
             <View>
               <Text
                 style={[

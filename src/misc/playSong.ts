@@ -1,12 +1,12 @@
 import TrackPlayer from 'react-native-track-player';
 import {getBestFormat} from './ytdl-wrapper';
 import {AsyncStorage} from 'react-native';
+import RNFetchBlob from 'rn-fetch-blob';
 
 export default async (href, updateRecentlyPlayed) => {
   try {
     await TrackPlayer.setupPlayer();
     TrackPlayer.updateOptions({
-      ratingType: TrackPlayer.RATING_5_STARS,
       capabilities: [
         TrackPlayer.CAPABILITY_PLAY,
         TrackPlayer.CAPABILITY_PAUSE,
@@ -23,7 +23,13 @@ export default async (href, updateRecentlyPlayed) => {
     });
 
     var {bestFormat, info} = await getBestFormat(href);
-    console.log(info);
+
+    let streamUrl = '';
+    const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
+    if (downloaded.includes(info.title + '.webm'))
+      streamUrl =
+        'file://' + RNFetchBlob.fs.dirs.MusicDir + '/' + info.title + '.webm';
+    else streamUrl = bestFormat.url;
 
     // Add to recentlyPlayed songs
     let recentlyPlayed = JSON.parse(
@@ -51,7 +57,7 @@ export default async (href, updateRecentlyPlayed) => {
     // Play the song
     await TrackPlayer.add({
       id: '1',
-      url: bestFormat.url,
+      url: streamUrl,
       title: info.title,
       artist: info.author.name,
       artwork: info.player_response.videoDetails.thumbnail.thumbnails[2].url,

@@ -128,53 +128,55 @@ export default class PlaylistScreen extends React.Component {
             }}
           />
         </View>
-        <View
-          style={{
-            backgroundColor: Colors.backgroundPrimary,
-            height: Dimensions.get('window').height,
-          }}>
-          <View style={{flex: 1, marginTop: 30, justifyContent: 'flex-start'}}>
-            <MainContext.Consumer>
-              {context => (
-                <IconMaterial
-                  name="play"
-                  style={{
-                    color: Colors.textPrimary,
-                    textAlign: 'center',
-                    marginBottom: 10,
-                  }}
-                  size={40}
-                  onPress={() =>
-                    this.startPlaylist(context.updateRecentlyPlayed)
-                  }
-                />
-              )}
-            </MainContext.Consumer>
-            <View>
-              <Text
-                style={[
-                  {
-                    fontSize: 25,
-                    textAlign: 'center',
-                    color: Colors.textPrimary,
-                    marginBottom: 5,
-                  },
-                ]}>
-                {this.state.title}
-              </Text>
-              <Text
-                style={[
-                  {
-                    fontSize: 15,
-                    textAlign: 'center',
-                    color: Colors.textSecondary,
-                  },
-                ]}>
-                {'Created on ' + this.state.createdOn}
-              </Text>
-            </View>
-            <View style={{marginTop: 10}}>
-              <ScrollView>
+        <ScrollView>
+          <View
+            style={{
+              backgroundColor: Colors.backgroundPrimary,
+              height: Dimensions.get('window').height,
+              marginBottom: 30,
+            }}>
+            <View
+              style={{flex: 1, marginTop: 20, justifyContent: 'flex-start'}}>
+              <MainContext.Consumer>
+                {context => (
+                  <IconMaterial
+                    name="play"
+                    style={{
+                      color: Colors.textPrimary,
+                      textAlign: 'center',
+                      marginBottom: 10,
+                    }}
+                    size={40}
+                    onPress={() =>
+                      this.startPlaylist(context.updateRecentlyPlayed)
+                    }
+                  />
+                )}
+              </MainContext.Consumer>
+              <View>
+                <Text
+                  style={[
+                    {
+                      fontSize: 25,
+                      textAlign: 'center',
+                      color: Colors.textPrimary,
+                      marginBottom: 5,
+                    },
+                  ]}>
+                  {this.state.title}
+                </Text>
+                <Text
+                  style={[
+                    {
+                      fontSize: 15,
+                      textAlign: 'center',
+                      color: Colors.textSecondary,
+                    },
+                  ]}>
+                  {'Created on ' + this.state.createdOn}
+                </Text>
+              </View>
+              <View style={{marginTop: 10}}>
                 {this.state.tracks.length > 0 ? (
                   tracksToRender
                 ) : (
@@ -194,10 +196,10 @@ export default class PlaylistScreen extends React.Component {
                     </Text>
                   </View>
                 )}
-              </ScrollView>
+              </View>
             </View>
           </View>
-        </View>
+        </ScrollView>
       </View>
     );
   }

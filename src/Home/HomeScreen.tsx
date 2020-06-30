@@ -68,7 +68,6 @@ export default class HomeScreen extends React.Component {
     let recentlyPlayedToRender = (
       <MainContext.Consumer>
         {context => {
-          console.log(context.recentlyPlayed);
           return context.recentlyPlayed.length > 0 ? (
             context.recentlyPlayed.map((elem, i) => (
               <TouchableHighlight onPress={() => this.openMenu(elem)} key={i}>

@@ -59,14 +59,23 @@ export default class PopupMenu extends React.Component {
     const {bestFormat, info} = await getBestFormat(
       this.props.navigation.getParam('href'),
     );
+
+    let streamUrl = '';
+    const downloaded = await RNFetchBlob.fs.ls(RNFetchBlob.fs.dirs.MusicDir);
+    if (downloaded.includes(info.title + '.webm'))
+      streamUrl =
+        'file://' + RNFetchBlob.fs.dirs.MusicDir + '/' + info.title + '.webm';
+    else streamUrl = bestFormat.url;
+
     await TrackPlayer.add({
       id: '0',
-      url: bestFormat.url,
+      url: streamUrl,
       title: this.props.navigation.getParam('title'),
       artist: this.props.navigation.getParam('artist'),
       artwork: this.props.navigation.getParam('image'),
     });
     TrackPlayer.play();
+    console.log(await TrackPlayer.getQueue());
   };
 
   like = async likedSongs => {

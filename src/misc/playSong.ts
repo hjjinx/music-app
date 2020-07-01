@@ -12,6 +12,8 @@ export default async (href, updateRecentlyPlayed) => {
         TrackPlayer.CAPABILITY_PAUSE,
         TrackPlayer.CAPABILITY_STOP,
         TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
+        TrackPlayer.CAPABILITY_SEEK_TO,
+        TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
       ],
 
       // An array of capabilities that will show up when the notification is in the compact form on Android

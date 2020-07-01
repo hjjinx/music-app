@@ -53,6 +53,7 @@ export default class SearchScreen extends React.Component {
       this.searchTimeout = setTimeout(async () => {
         // send the request for searching YouTube here
         const results = await search(q);
+        console.log(results);
         this.setState({searching: false, results});
       }, 200);
     });

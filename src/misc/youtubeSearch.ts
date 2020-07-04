@@ -1,4 +1,4 @@
-// Made this for Discord bot in order to search YouTube search results
+// Made this for Discord bot in order to scrape YouTube search results
 
 export default async function(query) {
   const cheerio = require('react-native-cheerio');
@@ -11,8 +11,8 @@ export default async function(query) {
 
   const ch1 = await $(`h3.yt-lockup-title`);
 
+  // If YouTube returns results in the old way..
   ch1.each((i, elem) => {
-    console.log('DIDnt require the new method');
     const child = elem.children[0];
     const artist = elem.next.children[0].children[0].data;
     const img =
@@ -29,30 +29,23 @@ export default async function(query) {
       artist,
     });
   });
+
+  // If YouTube does NOT return results in the old way..
   if (urlArr.length === 0) {
-    let script = await $('script').get()[26].children[0].data;
-    console.log('aaaa');
-    var badJson = script.substr(30, script.length - 140);
-
-    const json5 = require('json5');
-
-    var correctJson = badJson.replace(/\n/g, '');
-    correctJson = json5.parse(correctJson);
-
-    let results =
-      correctJson.contents.twoColumnSearchResultsRenderer.primaryContents
+    html = $.html();
+    const startIndex = html.indexOf(`window["ytInitialData"]`) + 26;
+    const endIndex = html.indexOf(`window["ytInitialPlayerResponse"]`) - 6;
+    const length = endIndex - startIndex;
+    const content = JSON.parse(html.substr(startIndex, length));
+    const results =
+      content.contents.twoColumnSearchResultsRenderer.primaryContents
         .sectionListRenderer.contents[0].itemSectionRenderer.contents;
 
-    const showingSearchInsteadFor = results[0].showingResultsForRenderer
-      ? 1
-      : 0;
-    // console.log(showingSearchInsteadFor);
+    const firstIndexIsNotAResult =
+      results[0].showingResultsForRenderer || results[0].searchPyvRenderer;
     for (
-      let i = showingSearchInsteadFor;
-      i <
-      (results.length < 20 + showingSearchInsteadFor
-        ? results.length + showingSearchInsteadFor
-        : 20 + showingSearchInsteadFor);
+      let i = firstIndexIsNotAResult ? 1 : 0;
+      i < (firstIndexIsNotAResult ? 21 : 20);
       i++
     ) {
       urlArr.push({
@@ -66,16 +59,16 @@ export default async function(query) {
       });
     }
 
-    // videoId;
+    // // videoId
     // console.log(
-    //   'https://youtube.com/watch?v=' + results[0].videoRenderer.videoId,
+    //   "https://youtube.com/watch?v=" + results[0].videoRenderer.videoId
     // );
 
-    // // thumbnail;
+    // // thumbnail
     // console.log(
     //   results[0].videoRenderer.thumbnail.thumbnails[
     //     results[0].videoRenderer.thumbnail.thumbnails.length - 1
-    //   ].url,
+    //   ].url
     // );
 
     // // Title
